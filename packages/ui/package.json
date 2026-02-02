@@ -10,6 +10,10 @@
 		"generate:component": "turbo gen react-component",
 		"check-types": "tsc --noEmit"
 	},
+	"dependencies": {
+		"react": "^19.2.3",
+		"react-dom": "^19.2.3"
+	},
 	"devDependencies": {
 		"@repo/biome-config": "workspace:^",
 		"@repo/typescript-config": "workspace:*",
@@ -17,9 +21,5 @@
 		"@types/react": "19.2.9",
 		"@types/react-dom": "19.2.3",
 		"typescript": "5.9.3"
-	},
-	"dependencies": {
-		"react": "^19.2.3",
-		"react-dom": "^19.2.3"
 	}
 }
