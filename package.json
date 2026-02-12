@@ -1,9 +1,9 @@
 {
-	"name": "my-turborepo",
+	"name": "utilities-service",
 	"private": true,
 	"scripts": {
 		"build": "turbo run build",
-		"dev": "turbo run dev",
+		"dev": "turbo run dev db:studio --parallel",
 		"lint": "turbo run lint",
 		"check-types": "turbo run check-types"
 	},

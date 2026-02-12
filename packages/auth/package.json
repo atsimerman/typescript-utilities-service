@@ -1,0 +1,28 @@
+{
+	"name": "@repo/auth",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"auth:generate": "dotenvx run --env-file=/workspace/.env -- pnpm dlx @better-auth/cli generate --config ./src/index.ts --output ../database/src/schema/auth.ts"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"default": "./dist/index.js"
+		}
+	},
+	"dependencies": {
+		"@repo/database": "workspace:*",
+		"@repo/typescript-config": "workspace:*",
+		"better-auth": "^1.4.17"
+	},
+	"devDependencies": {
+		"@dotenvx/dotenvx": "^1.52.0",
+		"@types/node": "^25.0.10"
+	}
+}
