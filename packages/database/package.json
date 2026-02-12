@@ -1,0 +1,30 @@
+{
+	"name": "@repo/database",
+	"version": "0.0.0",
+	"type": "module",
+	"private": true,
+	"sideEffects": false,
+	"scripts": {
+		"build": "tsc",
+		"dev": "tsc --watch",
+		"db:push": "dotenvx run --env-file=/workspace/.env --quiet -- drizzle-kit push",
+		"db:studio": "dotenvx run --env-file=/workspace/.env --quiet -- drizzle-kit studio"
+	},
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"import": "./dist/src/index.js",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"dependencies": {
+		"@repo/typescript-config": "workspace:*",
+		"drizzle-orm": "^0.45.1",
+		"pg": "^8.17.2"
+	},
+	"devDependencies": {
+		"@dotenvx/dotenvx": "^1.52.0",
+		"@types/node": "^25.0.10",
+		"drizzle-kit": "^0.31.8"
+	}
+}
