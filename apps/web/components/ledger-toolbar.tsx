@@ -7,6 +7,7 @@ import {
 	AddLedgerPaymentDialog,
 } from "@/components/ledger-dialogs";
 import { AddLedgerFromTemplateButton } from "@/components/add-ledger-from-template-button";
+import { LedgerReceiptButton } from "@/components/ledger-receipt-button";
 
 type ServiceOption = { id: string; name: string };
 
@@ -57,7 +58,8 @@ export function LedgerToolbar({
 			<div className="flex flex-wrap gap-2">
 				<AddLedgerChargeDialog addressId={addressId} services={services} />
 				<AddLedgerPaymentDialog addressId={addressId} services={services} />
-				<AddLedgerAdjustmentDialog addressId={addressId} services={services} />			<AddLedgerFromTemplateButton addressId={addressId} />			</div>
+			<AddLedgerAdjustmentDialog addressId={addressId} services={services} />			<AddLedgerFromTemplateButton addressId={addressId} />
+			<LedgerReceiptButton addressId={addressId} period={currentPeriod} />			</div>
 		</div>
 	);
 }
