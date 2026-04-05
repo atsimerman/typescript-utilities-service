@@ -1,4 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
+
+export { eq } from "drizzle-orm";
+
 import { schema } from "./schema/index.js";
 
 export const createDB = ({ pgUrl }: { pgUrl: string }) =>
