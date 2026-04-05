@@ -8,13 +8,11 @@ import {
 	SidebarRail,
 } from "@repo/ui/components/sidebar";
 import {
-	AudioLinesIcon,
-	BookOpenIcon,
-	BotIcon,
-	GalleryVerticalEndIcon,
+	FileTextIcon,
+	GaugeIcon,
+	LandmarkIcon,
 	Settings2Icon,
-	TerminalIcon,
-	TerminalSquareIcon,
+	WalletIcon,
 } from "lucide-react";
 import type * as React from "react";
 import { NavMain } from "@/components/nav-main";
@@ -22,126 +20,138 @@ import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import { authClient } from "@/lib/auth-client";
 
-// This is sample data.
+type Address = {
+	id: string;
+	label: string | null;
+	userId: string;
+	countryId: string;
+	zipCode: string | null;
+	city: string | null;
+	street: string | null;
+	active: boolean;
+	createdAt: Date;
+	updatedAt: Date;
+};
+
+type Country = {
+	id: string;
+	name: string;
+	iso: string;
+	createdAt: Date;
+};
+
+type Currency = {
+	id: string;
+	name: string;
+	code: string;
+	symbol: string;
+	minorUnit: number;
+	createdAt: Date;
+};
+
+// Navigation configuration for the billing app.
 const data = {
 	user: {
 		name: "shadcn",
 		email: "m@example.com",
 		avatar: "/avatars/shadcn.jpg",
 	},
-	teams: [
-		{
-			name: "Acme Inc",
-			logo: <GalleryVerticalEndIcon />,
-			plan: "Enterprise",
-		},
-		{
-			name: "Acme Corp.",
-			logo: <AudioLinesIcon />,
-			plan: "Startup",
-		},
-		{
-			name: "Evil Corp.",
-			logo: <TerminalIcon />,
-			plan: "Free",
-		},
-	],
 	navMain: [
 		{
-			title: "Playground",
-			url: "#",
-			icon: <TerminalSquareIcon />,
+			title: "Dashboard",
+			url: "/",
+			icon: <LandmarkIcon />,
 			isActive: true,
 			items: [
 				{
-					title: "History",
-					url: "#",
+					title: "Overview",
+					url: "/",
 				},
 				{
-					title: "Starred",
-					url: "#",
-				},
-				{
-					title: "Settings",
-					url: "#",
+					title: "Monthly summary",
+					url: "/summary",
 				},
 			],
 		},
 		{
-			title: "Models",
-			url: "#",
-			icon: <BotIcon />,
+			title: "Configuration",
+			url: "/services",
+			icon: <FileTextIcon />,
 			items: [
 				{
-					title: "Genesis",
-					url: "#",
+					title: "Services & pricing",
+					url: "/services",
 				},
 				{
-					title: "Explorer",
-					url: "#",
-				},
-				{
-					title: "Quantum",
-					url: "#",
+					title: "Meters",
+					url: "/meters",
 				},
 			],
 		},
 		{
-			title: "Documentation",
-			url: "#",
-			icon: <BookOpenIcon />,
+			title: "Meters",
+			url: "/meters",
+			icon: <GaugeIcon />,
 			items: [
 				{
-					title: "Introduction",
-					url: "#",
+					title: "Meter readings",
+					url: "/meters",
 				},
 				{
-					title: "Get Started",
-					url: "#",
+					title: "Meter readings templates",
+					url: "/meters/templates",
+				},
+			],
+		},
+		{
+			title: "Ledger",
+			url: "/ledger",
+			icon: <WalletIcon />,
+			items: [
+				{
+					title: "Charges & payments",
+					url: "/ledger",
 				},
 				{
-					title: "Tutorials",
-					url: "#",
-				},
-				{
-					title: "Changelog",
-					url: "#",
+					title: "Ledger templates",
+					url: "/ledger/templates",
 				},
 			],
 		},
 		{
 			title: "Settings",
-			url: "#",
+			url: "/settings",
 			icon: <Settings2Icon />,
 			items: [
 				{
-					title: "General",
-					url: "#",
-				},
-				{
-					title: "Team",
-					url: "#",
-				},
-				{
-					title: "Billing",
-					url: "#",
-				},
-				{
-					title: "Limits",
-					url: "#",
+					title: "Profile & account",
+					url: "/settings",
 				},
 			],
 		},
 	],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+	addresses = [],
+	countries = [],
+	currencies = [],
+	...props
+}: {
+	addresses?: Address[];
+	countries?: Country[];
+	currencies?: Currency[];
+} & React.ComponentProps<typeof Sidebar>) {
 	const { data: session } = authClient.useSession();
 
 	return (
 		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
-				<TeamSwitcher teams={data.teams} />
+				<TeamSwitcher
+					addresses={addresses}
+					countries={countries}
+					currencies={currencies}
+				/>
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />

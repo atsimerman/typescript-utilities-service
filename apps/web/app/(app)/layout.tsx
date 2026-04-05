@@ -1,23 +1,34 @@
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from "@repo/ui/components/breadcrumb";
+import { Breadcrumb, BreadcrumbList } from "@repo/ui/components/breadcrumb";
 import { Separator } from "@repo/ui/components/separator";
 import {
 	SidebarInset,
 	SidebarProvider,
 	SidebarTrigger,
 } from "@repo/ui/components/sidebar";
+import { fetchAddresses } from "@/app/actions/addresses";
+import { fetchCountries } from "@/app/actions/countries";
+import { fetchCurrencies } from "@/app/actions/currencies";
 import { AppSidebar } from "@/components/app-sidebar";
+import { BreadcrumbTitle } from "@/components/breadcrumb-title";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	const [addresses, countries, currencies] = await Promise.all([
+		fetchAddresses(),
+		fetchCountries(),
+		fetchCurrencies(),
+	]);
+
 	return (
 		<SidebarProvider>
-			<AppSidebar />
+			<AppSidebar
+				addresses={addresses}
+				countries={countries}
+				currencies={currencies}
+			/>
 			<SidebarInset>
 				<header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
 					<div className="flex items-center gap-2 px-4">
@@ -28,15 +39,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 						/>
 						<Breadcrumb>
 							<BreadcrumbList>
-								<BreadcrumbItem className="hidden md:block">
-									<BreadcrumbLink href="#">
-										Building Your Application
-									</BreadcrumbLink>
-								</BreadcrumbItem>
-								<BreadcrumbSeparator className="hidden md:block" />
-								<BreadcrumbItem>
-									<BreadcrumbPage>Data Fetching</BreadcrumbPage>
-								</BreadcrumbItem>
+								<BreadcrumbTitle />
 							</BreadcrumbList>
 						</Breadcrumb>
 					</div>

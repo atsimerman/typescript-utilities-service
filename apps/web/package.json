@@ -13,6 +13,7 @@
 	"dependencies": {
 		"@daveyplate/better-auth-ui": "^3.3.15",
 		"@repo/auth": "workspace:*",
+		"@repo/database": "workspace:*",
 		"@repo/ui": "workspace:*",
 		"better-auth": "^1.4.17",
 		"lucide-react": "^0.563.0",
