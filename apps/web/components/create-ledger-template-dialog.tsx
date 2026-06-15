@@ -88,12 +88,10 @@ export function CreateLedgerTemplateDialog({
 	function updateLine(
 		tempId: string,
 		key: "entryType" | "serviceId",
-		value: string
+		value: string,
 	) {
 		setLines(
-			lines.map((l) =>
-				l.tempId === tempId ? { ...l, [key]: value } : l
-			)
+			lines.map((l) => (l.tempId === tempId ? { ...l, [key]: value } : l)),
 		);
 	}
 
@@ -105,7 +103,7 @@ export function CreateLedgerTemplateDialog({
 					Create template
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+			<DialogContent className="sm:max-w-md overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Create ledger template</DialogTitle>
 					<DialogDescription>
@@ -134,7 +132,9 @@ export function CreateLedgerTemplateDialog({
 
 					<div className="space-y-2">
 						<div className="flex items-center justify-between">
-							<label className="text-sm font-medium">Lines</label>
+							<label htmlFor="" className="text-sm font-medium">
+								Lines
+							</label>
 							<Button
 								type="button"
 								variant="outline"
@@ -145,7 +145,7 @@ export function CreateLedgerTemplateDialog({
 								Add line
 							</Button>
 						</div>
-						<div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
+						<div className="space-y-2 max-h-96 overflow-y-auto border rounded p-2">
 							{lines.length === 0 ? (
 								<p className="text-xs text-muted-foreground p-2">
 									No lines yet. Add one to get started.
@@ -157,17 +157,17 @@ export function CreateLedgerTemplateDialog({
 										className="flex gap-2 items-end p-2 border rounded bg-muted/50"
 									>
 										<div className="flex-1">
-											<label className="text-xs font-medium block mb-1">
+											<label
+												htmlFor="type"
+												className="text-xs font-medium block mb-1"
+											>
 												Type
 											</label>
 											<select
+												id="type"
 												value={line.entryType}
 												onChange={(e) =>
-													updateLine(
-														line.tempId,
-														"entryType",
-														e.target.value
-													)
+													updateLine(line.tempId, "entryType", e.target.value)
 												}
 												className="w-full h-8 rounded border border-input bg-background px-2 py-1 text-xs"
 											>
@@ -176,17 +176,17 @@ export function CreateLedgerTemplateDialog({
 											</select>
 										</div>
 										<div className="flex-1">
-											<label className="text-xs font-medium block mb-1">
+											<label
+												htmlFor="service"
+												className="text-xs font-medium block mb-1"
+											>
 												Service (optional)
 											</label>
 											<select
+												id="servicd"
 												value={line.serviceId || ""}
 												onChange={(e) =>
-													updateLine(
-														line.tempId,
-														"serviceId",
-														e.target.value
-													)
+													updateLine(line.tempId, "serviceId", e.target.value)
 												}
 												className="w-full h-8 rounded border border-input bg-background px-2 py-1 text-xs"
 											>

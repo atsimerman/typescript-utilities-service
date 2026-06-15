@@ -55,10 +55,7 @@ export async function createMeterReading(data: {
 			}),
 			db.query.meterReadings.findFirst({
 				where: (r, { and, eq }) =>
-					and(
-						eq(r.meterId, data.meterId),
-						eq(r.readingDate, readingDate),
-					),
+					and(eq(r.meterId, data.meterId), eq(r.readingDate, readingDate)),
 			}),
 			db.query.meters.findFirst({
 				where: (m, { eq }) => eq(m.id, data.meterId),
@@ -66,17 +63,18 @@ export async function createMeterReading(data: {
 		]);
 
 		if (duplicate) {
-			return { error: "A reading for this date already exists for this meter." };
+			return {
+				error: "A reading for this date already exists for this meter.",
+			};
 		}
 
 		const lastReading = existing[0];
 		const previousValue = lastReading
 			? lastReading.value
-			: meter?.initialReading ?? 0;
+			: (meter?.initialReading ?? 0);
 		if (value < previousValue) {
 			return {
-				error:
-					"Value must be greater than or equal to the previous reading.",
+				error: "Value must be greater than or equal to the previous reading.",
 			};
 		}
 
@@ -143,7 +141,7 @@ export async function createMeterReadingsFromTemplate(data: {
 			if (!templateMeterIds.has(value.meterId)) {
 				const meter = metersById.get(value.meterId);
 				errors.push(
-					`Meter "${meter?.name || value.meterId}" is not in this template`
+					`Meter "${meter?.name || value.meterId}" is not in this template`,
 				);
 				continue;
 			}
@@ -151,23 +149,22 @@ export async function createMeterReadingsFromTemplate(data: {
 			// Validate value
 			if (Number.isNaN(value.value) || value.value < 0) {
 				const meter = metersById.get(value.meterId);
-				errors.push(`${meter?.name || value.meterId}: Value must be non-negative`);
+				errors.push(
+					`${meter?.name || value.meterId}: Value must be non-negative`,
+				);
 				continue;
 			}
 
 			// Check for duplicate reading
 			const existing = await db.query.meterReadings.findFirst({
 				where: (r, { and, eq }) =>
-					and(
-						eq(r.meterId, value.meterId),
-						eq(r.readingDate, readingDate),
-					),
+					and(eq(r.meterId, value.meterId), eq(r.readingDate, readingDate)),
 			});
 
 			if (existing) {
 				const meter = metersById.get(value.meterId);
 				errors.push(
-					`${meter?.name || value.meterId}: Reading for this date already exists`
+					`${meter?.name || value.meterId}: Reading for this date already exists`,
 				);
 				continue;
 			}
@@ -182,11 +179,11 @@ export async function createMeterReadingsFromTemplate(data: {
 			const meter = metersById.get(value.meterId);
 			const previousValue = lastReadings[0]
 				? lastReadings[0].value
-				: meter?.initialReading ?? 0;
+				: (meter?.initialReading ?? 0);
 
 			if (value.value < previousValue) {
 				errors.push(
-					`${meter?.name || value.meterId}: Value must be >= last reading (${previousValue})`
+					`${meter?.name || value.meterId}: Value must be >= last reading (${previousValue})`,
 				);
 			}
 		}

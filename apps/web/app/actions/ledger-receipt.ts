@@ -1,10 +1,8 @@
 "use server";
 
 import { formatMinorAmount } from "@/lib/format-money";
-import {
-	ledgerEntryPeriodKey,
-	normalizePeriodFirstDay,
-} from "@/lib/ledger-period";
+import { applyFilters, type LedgerFilters } from "@/lib/ledger-filters";
+import { normalizePeriodFirstDay } from "@/lib/ledger-period";
 import { fetchAddressCurrency, fetchLedgerEntries } from "./ledger-entries";
 
 function formatPeriodLabel(period: Date | string): string {
@@ -26,11 +24,13 @@ function formatPeriodLabel(period: Date | string): string {
 
 export async function generateLedgerReceipt({
 	addressId,
-	period,
+	filters,
 }: {
 	addressId: string;
-	period?: string;
-}): Promise<{ success: true; receipt: string } | { error: string }> {
+	filters: LedgerFilters;
+}): Promise<
+	{ success: true; receipt: string } | { success: false; error: string }
+> {
 	try {
 		// Fetch entries and currency
 		const [entries, currency] = await Promise.all([
@@ -39,31 +39,36 @@ export async function generateLedgerReceipt({
 		]);
 
 		if (!currency) {
-			return { error: "Could not fetch currency information" };
+			return { success: false, error: "Could not fetch currency information" };
 		}
 
-		// Filter by period if provided
-		let filtered = entries;
-		let periodLabel = "All entries";
-		if (period) {
-			const normalizedPeriod = normalizePeriodFirstDay(period);
-			if (!normalizedPeriod) {
-				return { error: "Invalid period format" };
-			}
-			filtered = entries.filter((e) => {
-				const entryPeriod = ledgerEntryPeriodKey(e.period);
-				return entryPeriod === normalizedPeriod;
-			});
-			periodLabel = formatPeriodLabel(normalizedPeriod);
+		if (filters.period && !normalizePeriodFirstDay(filters.period)) {
+			return { success: false, error: "Invalid period format" };
 		}
+
+		const filtered = applyFilters(entries, filters);
+
+		const labelParts: string[] = [];
+		if (filters.period) {
+			const normalized = normalizePeriodFirstDay(filters.period)!;
+			labelParts.push(formatPeriodLabel(normalized));
+		}
+		if (filters.type) {
+			labelParts.push(
+				filters.type.charAt(0).toUpperCase() + filters.type.slice(1) + "s",
+			);
+		}
+		const filtersLabel =
+			labelParts.length > 0 ? labelParts.join(" | ") : "All entries";
 
 		if (filtered.length === 0) {
 			const lines: string[] = [];
-			lines.push("--- RECEIPT ---");
+			lines.push("--- Ledger Receipt ---");
 			lines.push("");
-			lines.push(`Period: ${periodLabel}`);
+			lines.push(`Filter:    ${filtersLabel}`);
+			lines.push(`Generated: ${new Date().toLocaleString()}`);
 			lines.push("");
-			lines.push("No charges or payments for this period.");
+			lines.push("No entries match the current filters.");
 			return { success: true, receipt: lines.join("\n") };
 		}
 
@@ -85,9 +90,10 @@ export async function generateLedgerReceipt({
 
 		// Build receipt text
 		const lines: string[] = [];
-		lines.push("--- RECEIPT ---");
+		lines.push("--- Ledger Receipt ---");
 		lines.push("");
-		lines.push(`Period: ${periodLabel}`);
+		lines.push(`Filter:    ${filtersLabel}`);
+		lines.push(`Generated: ${new Date().toLocaleString()}`);
 		lines.push("");
 
 		// Add line items (sorted by service name for consistency)
@@ -104,13 +110,12 @@ export async function generateLedgerReceipt({
 		const grandTotal = filtered.reduce((sum, e) => sum + e.amount, 0);
 
 		lines.push("");
-		lines.push("---");
-		lines.push(`TOTAL: ${formatMinorAmount(grandTotal, currency)}`);
-		lines.push(`Generated: ${new Date().toLocaleString()}`);
+		lines.push(`Total: ${formatMinorAmount(grandTotal, currency)}`);
+		lines.push("");
 
 		return { success: true, receipt: lines.join("\n") };
 	} catch (error) {
 		console.error("Failed to generate receipt:", error);
-		return { error: "Failed to generate receipt" };
+		return { success: false, error: "Failed to generate receipt" };
 	}
 }

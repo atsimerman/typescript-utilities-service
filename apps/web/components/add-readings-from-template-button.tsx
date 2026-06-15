@@ -13,18 +13,10 @@ import { Input } from "@repo/ui/components/input";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import {
-	fetchMeterReadingTemplateWithLines,
 	fetchMeterReadingTemplates,
+	fetchMeterReadingTemplateWithLines,
 } from "@/app/actions/meter-reading-templates";
 import { createMeterReadingsFromTemplate } from "@/app/actions/meter-readings";
-import { ChevronDownIcon } from "lucide-react";
-
-type Meter = {
-	id: string;
-	name: string;
-	unit: string;
-	initialReading: number;
-};
 
 type TemplateRow = {
 	meterId: string;
@@ -42,8 +34,9 @@ export function AddReadingsFromTemplateButton({
 	const [templates, setTemplates] = React.useState<
 		Array<{ id: string; name: string; lineCount: number }>
 	>([]);
-	const [selectedTemplate, setSelectedTemplate] =
-		React.useState<typeof templates[number] | null>(null);
+	const [selectedTemplate, setSelectedTemplate] = React.useState<
+		(typeof templates)[number] | null
+	>(null);
 	const [open, setOpen] = React.useState(false);
 
 	React.useEffect(() => {
@@ -64,7 +57,7 @@ export function AddReadingsFromTemplateButton({
 					Add readings from template
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-lg">
+			<DialogContent className="sm:max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>Add readings from template</DialogTitle>
 					<DialogDescription>
@@ -76,6 +69,7 @@ export function AddReadingsFromTemplateButton({
 					<div className="space-y-2">
 						{templates.map((template) => (
 							<button
+								type="button"
 								key={template.id}
 								onClick={() => setSelectedTemplate(template)}
 								className="w-full p-3 text-left rounded border border-input hover:bg-muted/50 transition-colors"
@@ -91,8 +85,6 @@ export function AddReadingsFromTemplateButton({
 				) : (
 					<ApplyReadingsFromTemplateForm
 						templateId={selectedTemplate.id}
-						templateName={selectedTemplate.name}
-						addressId={addressId}
 						onClose={() => {
 							setOpen(false);
 							setSelectedTemplate(null);
@@ -108,14 +100,10 @@ export function AddReadingsFromTemplateButton({
 
 function ApplyReadingsFromTemplateForm({
 	templateId,
-	templateName,
-	addressId,
 	onClose,
 	onBack,
 }: {
 	templateId: string;
-	templateName: string;
-	addressId: string;
 	onClose: () => void;
 	onBack: () => void;
 }) {
@@ -123,17 +111,13 @@ function ApplyReadingsFromTemplateForm({
 	const [error, setError] = React.useState<string | null>(null);
 	const [details, setDetails] = React.useState<string[] | null>(null);
 	const [readingDate, setReadingDate] = React.useState(
-		new Date().toISOString().slice(0, 10)
+		new Date().toISOString().slice(0, 10),
 	);
 	const [rows, setRows] = React.useState<TemplateRow[]>([]);
 	const [values, setValues] = React.useState<Map<string, string>>(new Map());
 	const [isLoadingTemplate, setIsLoadingTemplate] = React.useState(true);
 
-	React.useEffect(() => {
-		loadTemplate();
-	}, []);
-
-	async function loadTemplate() {
+	const loadTemplate = React.useCallback(async () => {
 		const template = await fetchMeterReadingTemplateWithLines(templateId);
 		if (template) {
 			const templateRows = template.lines.map((line) => ({
@@ -145,7 +129,11 @@ function ApplyReadingsFromTemplateForm({
 			setRows(templateRows);
 		}
 		setIsLoadingTemplate(false);
-	}
+	}, [templateId]);
+
+	React.useEffect(() => {
+		loadTemplate();
+	}, [loadTemplate]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -187,23 +175,24 @@ function ApplyReadingsFromTemplateForm({
 					<div>{error}</div>
 					{details && details.length > 0 && (
 						<ul className="mt-2 ml-4 list-disc text-xs space-y-1">
-							{details.map((detail, idx) => (
-								<li key={idx}>{detail}</li>
+							{details.map((detail) => (
+								<li key={detail}>{detail}</li>
 							))}
 						</ul>
 					)}
 				</div>
 			)}
 
-			<div className="space-y-2 py-2 max-h-48 overflow-y-auto border rounded p-3 bg-muted/50">
+			<div className="space-y-2 py-2 max-h-96 overflow-y-auto border rounded p-3 bg-muted/50">
 				{rows.map((row) => (
 					<div key={row.meterId} className="flex items-end gap-2">
 						<div className="flex-1">
-							<label className="text-xs font-medium block mb-1">
+							<label htmlFor="value" className="text-xs font-medium block mb-1">
 								{row.name}
 								<span className="text-muted-foreground"> ({row.unit})</span>
 							</label>
 							<input
+								id="value"
 								type="number"
 								value={values.get(row.meterId) || ""}
 								onChange={(e) => {

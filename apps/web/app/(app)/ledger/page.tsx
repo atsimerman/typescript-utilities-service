@@ -8,9 +8,10 @@ import { fetchServices } from "@/app/actions/services";
 import { LedgerToolbar } from "@/components/ledger-toolbar";
 import { formatMinorAmount } from "@/lib/format-money";
 import {
-	ledgerEntryPeriodKey,
-	normalizePeriodFirstDay,
-} from "@/lib/ledger-period";
+	applyFilters,
+	isFiltered,
+	parseLedgerFilters,
+} from "@/lib/ledger-filters";
 
 function formatPeriodLabel(period: Date | string): string {
 	const key =
@@ -49,7 +50,7 @@ function recentMonthOptions(count: number): { value: string; label: string }[] {
 export default async function LedgerPage({
 	searchParams,
 }: {
-	searchParams: Promise<{ period?: string }>;
+	searchParams: Promise<{ period?: string; type?: string }>;
 }) {
 	const params = await searchParams;
 	const [addresses, services] = await Promise.all([
@@ -59,20 +60,17 @@ export default async function LedgerPage({
 
 	const activeAddress = addresses.at(0) ?? null;
 	const currency = activeAddress
-		? (await fetchAddressCurrency(activeAddress.id)) ?? {
+		? ((await fetchAddressCurrency(activeAddress.id)) ?? {
 				symbol: "",
 				minorUnit: 2,
-			}
+			})
 		: { symbol: "", minorUnit: 2 };
 
 	const allEntries = activeAddress
 		? await fetchLedgerEntries(activeAddress.id)
 		: [];
 
-	const filterKey =
-		params.period != null && params.period !== ""
-			? normalizePeriodFirstDay(params.period)
-			: null;
+	const filters = parseLedgerFilters(params);
 
 	let running = 0;
 	const withRunning = allEntries.map((e) => {
@@ -80,23 +78,13 @@ export default async function LedgerPage({
 		return { ...e, runningBalance: running };
 	});
 
-	const displayed =
-		filterKey != null
-			? withRunning.filter(
-					(e) => ledgerEntryPeriodKey(e.period) === filterKey,
-				)
-			: withRunning;
-
+	const displayed = applyFilters(withRunning, filters);
 	const allTimeBalance = activeAddress
 		? await sumLedgerAmountsForAddress(activeAddress.id)
 		: 0;
-
-	const periodNet = displayed.reduce((acc, e) => acc + e.amount, 0);
-
+	const filteredNet = displayed.reduce((acc, e) => acc + e.amount, 0);
 	const billableServices = services.filter((s) => s.type !== "group");
 	const monthOptions = recentMonthOptions(24);
-	const currentPeriod =
-		filterKey != null ? params.period?.slice(0, 7) : undefined;
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
@@ -131,11 +119,11 @@ export default async function LedgerPage({
 							<p className="text-xl font-semibold tabular-nums">
 								{formatMinorAmount(allTimeBalance, currency)}
 							</p>
-							{filterKey != null && (
+							{isFiltered(filters) && (
 								<p className="text-xs text-muted-foreground">
-									Net in selected month:{" "}
+									Filtered net:{" "}
 									<span className="font-medium text-foreground tabular-nums">
-										{formatMinorAmount(periodNet, currency)}
+										{formatMinorAmount(filteredNet, currency)}
 									</span>
 								</p>
 							)}
@@ -149,15 +137,15 @@ export default async function LedgerPage({
 							name: s.name,
 						}))}
 						monthOptions={monthOptions}
-						currentPeriod={currentPeriod}
+						filters={filters}
 					/>
 
 					<div className="overflow-hidden rounded-lg border bg-background text-xs">
 						{displayed.length === 0 ? (
 							<div className="p-4 text-muted-foreground">
 								<p className="font-medium">
-									{filterKey != null
-										? "No entries in this month."
+									{isFiltered(filters)
+										? "No entries match the current filters."
 										: "No ledger entries yet."}
 								</p>
 								<p className="mt-1">
@@ -252,10 +240,10 @@ export default async function LedgerPage({
 						)}
 					</div>
 
-					{filterKey != null && (
+					{isFiltered(filters) && (
 						<p className="text-[11px] text-muted-foreground">
 							Running balance reflects the cumulative total after each row in
-							chronological order (all periods). Filter only hides rows.
+							chronological order (all entries). Filters only hide rows.
 						</p>
 					)}
 				</div>

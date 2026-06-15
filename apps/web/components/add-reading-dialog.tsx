@@ -68,11 +68,12 @@ export function AddReadingDialog({
 					Add reading
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-sm">
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Add reading</DialogTitle>
 					<DialogDescription>
-						Record a meter reading for {meterName}. Value must be ≥ {previousValue} (previous/initial).
+						Record a meter reading for {meterName}. Value must be ≥{" "}
+						{previousValue} (previous/initial).
 					</DialogDescription>
 				</DialogHeader>
 				<form ref={formRef} onSubmit={handleSubmit} className="space-y-4">

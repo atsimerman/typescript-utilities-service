@@ -1,6 +1,6 @@
 "use server";
 
-import { createDB, schema, eq } from "@repo/database";
+import { createDB, eq, schema } from "@repo/database";
 
 export async function fetchMeterReadingTemplates(addressId: string) {
 	try {
@@ -28,7 +28,7 @@ export async function fetchMeterReadingTemplates(addressId: string) {
 					...t,
 					lineCount: lines.length,
 				};
-			})
+			}),
 		);
 
 		return templatesWithCounts || [];

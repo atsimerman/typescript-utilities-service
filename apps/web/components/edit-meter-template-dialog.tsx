@@ -35,11 +35,9 @@ type Meter = {
 export function EditMeterTemplateDialog({
 	templateId,
 	meters,
-	addressId,
 }: {
 	templateId: string;
 	meters: Meter[];
-	addressId: string;
 }) {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
@@ -47,17 +45,11 @@ export function EditMeterTemplateDialog({
 	const [error, setError] = React.useState<string | null>(null);
 	const [name, setName] = React.useState("");
 	const [selectedMeterIds, setSelectedMeterIds] = React.useState<Set<string>>(
-		new Set()
+		new Set(),
 	);
 	const [isLoadingData, setIsLoadingData] = React.useState(true);
 
-	React.useEffect(() => {
-		if (open && isLoadingData) {
-			loadTemplate();
-		}
-	}, [open]);
-
-	async function loadTemplate() {
+	const loadTemplate = React.useCallback(async () => {
 		setIsLoadingData(true);
 		const template = await fetchMeterReadingTemplateWithLines(templateId);
 		if (template) {
@@ -65,7 +57,13 @@ export function EditMeterTemplateDialog({
 			setSelectedMeterIds(new Set(template.lines.map((l) => l.meterId)));
 		}
 		setIsLoadingData(false);
-	}
+	}, [templateId]);
+
+	React.useEffect(() => {
+		if (open && isLoadingData) {
+			loadTemplate();
+		}
+	}, [open, isLoadingData, loadTemplate]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -108,7 +106,7 @@ export function EditMeterTemplateDialog({
 					<Pencil className="size-4" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+			<DialogContent className="sm:max-w-md overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Edit meter template</DialogTitle>
 					<DialogDescription>
@@ -141,10 +139,10 @@ export function EditMeterTemplateDialog({
 						</div>
 
 						<div className="space-y-2">
-							<label className="text-sm font-medium">
+							<span className="text-sm font-medium cursor-default">
 								Meters ({activeMeterCount} selected)
-							</label>
-							<div className="space-y-1 max-h-48 overflow-y-auto border rounded p-2">
+							</span>
+							<div className="space-y-1 max-h-96 overflow-y-auto border rounded p-2">
 								{meters.length === 0 ? (
 									<p className="text-xs text-muted-foreground p-2">
 										No meters available
@@ -181,7 +179,10 @@ export function EditMeterTemplateDialog({
 							>
 								Cancel
 							</Button>
-							<Button type="submit" disabled={loading || activeMeterCount === 0}>
+							<Button
+								type="submit"
+								disabled={loading || activeMeterCount === 0}
+							>
 								{loading ? "Saving..." : "Save changes"}
 							</Button>
 						</div>

@@ -23,11 +23,7 @@ type ServiceGroup = {
 
 type ServiceType = "group" | "fixed" | "metered";
 
-export function AddServiceDialog({
-	groups = [],
-}: {
-	groups?: ServiceGroup[];
-}) {
+export function AddServiceDialog({ groups = [] }: { groups?: ServiceGroup[] }) {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
 	const [loading, setLoading] = React.useState(false);
@@ -71,7 +67,7 @@ export function AddServiceDialog({
 					Add service
 				</Button>
 			</DialogTrigger>
-			<DialogContent>
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
 					<DialogTitle>Add service</DialogTitle>
 					<DialogDescription>
@@ -151,7 +147,11 @@ export function AddServiceDialog({
 					</div>
 
 					<div className="flex gap-2 pt-4">
-						<Button type="submit" disabled={loading} className="h-8 px-3 text-xs">
+						<Button
+							type="submit"
+							disabled={loading}
+							className="h-8 px-3 text-xs"
+						>
 							{loading ? "Creating..." : "Create service"}
 						</Button>
 						<DialogClose asChild>
@@ -169,4 +169,3 @@ export function AddServiceDialog({
 		</Dialog>
 	);
 }
-

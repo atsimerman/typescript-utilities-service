@@ -10,7 +10,7 @@ import {
 	DialogTrigger,
 } from "@repo/ui/components/dialog";
 import { Input } from "@repo/ui/components/input";
-import { PlusIcon, X } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { createMeterReadingTemplate } from "@/app/actions/meter-reading-templates";
@@ -42,7 +42,7 @@ export function CreateMeterTemplateDialog({
 	const [error, setError] = React.useState<string | null>(null);
 	const [name, setName] = React.useState("");
 	const [selectedMeterIds, setSelectedMeterIds] = React.useState<Set<string>>(
-		new Set()
+		new Set(),
 	);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -88,7 +88,7 @@ export function CreateMeterTemplateDialog({
 					Create template
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+			<DialogContent className="sm:max-w-md overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Create meter template</DialogTitle>
 					<DialogDescription>
@@ -116,10 +116,10 @@ export function CreateMeterTemplateDialog({
 					</div>
 
 					<div className="space-y-2">
-						<label className="text-sm font-medium">
+						<span className="text-sm font-medium cursor-default">
 							Meters ({activeMeterCount} selected)
-						</label>
-						<div className="space-y-1 max-h-48 overflow-y-auto border rounded p-2">
+						</span>
+						<div className="space-y-1 max-h-96 overflow-y-auto border rounded p-2">
 							{meters.length === 0 ? (
 								<p className="text-xs text-muted-foreground p-2">
 									No meters available

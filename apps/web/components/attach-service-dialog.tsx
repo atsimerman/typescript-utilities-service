@@ -216,7 +216,10 @@ export function AttachServiceDialog({
 					)}
 
 					<div className="flex gap-2 pt-2">
-						<Button type="submit" disabled={loading || selectableServices.length === 0}>
+						<Button
+							type="submit"
+							disabled={loading || selectableServices.length === 0}
+						>
 							{loading ? "Adding…" : "Add pricing version"}
 						</Button>
 						<DialogClose asChild>

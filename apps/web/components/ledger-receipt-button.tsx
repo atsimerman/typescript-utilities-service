@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useState } from "react";
-import { generateLedgerReceipt } from "@/app/actions/ledger-receipt";
 import { Button } from "@repo/ui/components/button";
 import {
 	Dialog,
@@ -10,19 +8,22 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@repo/ui/components/dialog";
+import * as React from "react";
+import { generateLedgerReceipt } from "@/app/actions/ledger-receipt";
+import type { LedgerFilters } from "@/lib/ledger-filters";
 
 export function LedgerReceiptButton({
 	addressId,
-	period,
+	filters,
 }: {
 	addressId: string;
-	period?: string;
+	filters: LedgerFilters;
 }) {
-	const [open, setOpen] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [receipt, setReceipt] = useState<string | null>(null);
-	const [error, setError] = useState<string | null>(null);
-	const [copied, setCopied] = useState(false);
+	const [open, setOpen] = React.useState(false);
+	const [loading, setLoading] = React.useState(false);
+	const [receipt, setReceipt] = React.useState<string | null>(null);
+	const [error, setError] = React.useState<string | null>(null);
+	const [copied, setCopied] = React.useState(false);
 
 	async function handleGenerateReceipt() {
 		setLoading(true);
@@ -32,7 +33,7 @@ export function LedgerReceiptButton({
 		try {
 			const result = await generateLedgerReceipt({
 				addressId,
-				period,
+				filters,
 			});
 
 			if (result.success) {
@@ -81,7 +82,7 @@ export function LedgerReceiptButton({
 			</Button>
 
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="max-w-lg">
+				<DialogContent className="max-w-md">
 					<DialogHeader>
 						<DialogTitle>Charges &amp; Payments Receipt</DialogTitle>
 						<DialogDescription>
@@ -108,7 +109,7 @@ export function LedgerReceiptButton({
 									<textarea
 										readOnly
 										value={receipt}
-										className="h-64 w-full resize-none border-0 bg-muted p-3 font-mono text-xs outline-none"
+										className="h-72 w-full resize-none border-0 bg-muted p-3 font-mono text-xs outline-none"
 										data-receipt-text
 									/>
 								</div>

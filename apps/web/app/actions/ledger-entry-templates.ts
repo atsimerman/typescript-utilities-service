@@ -1,6 +1,6 @@
 "use server";
 
-import { createDB, schema, eq } from "@repo/database";
+import { createDB, eq, schema } from "@repo/database";
 
 export async function fetchLedgerEntryTemplates(addressId: string) {
 	try {
@@ -28,7 +28,7 @@ export async function fetchLedgerEntryTemplates(addressId: string) {
 					...t,
 					lineCount: lines.length,
 				};
-			})
+			}),
 		);
 
 		return templatesWithCounts || [];
@@ -65,7 +65,9 @@ export async function fetchLedgerEntryTemplateWithLines(templateId: string) {
 
 		const linesWithServices = lines.map((line) => ({
 			...line,
-			service: line.serviceId ? (servicesById.get(line.serviceId) ?? null) : null,
+			service: line.serviceId
+				? (servicesById.get(line.serviceId) ?? null)
+				: null,
 		}));
 
 		return {

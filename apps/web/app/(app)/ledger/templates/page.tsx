@@ -1,6 +1,6 @@
 import { fetchAddresses } from "@/app/actions/addresses";
-import { fetchServices } from "@/app/actions/services";
 import { fetchLedgerEntryTemplates } from "@/app/actions/ledger-entry-templates";
+import { fetchServices } from "@/app/actions/services";
 import { LedgerTemplatesManager } from "@/components/ledger-templates-manager";
 
 export default async function LedgerTemplatesPage() {
@@ -13,7 +13,7 @@ export default async function LedgerTemplatesPage() {
 	]);
 
 	const nonGroupServices = services.filter(
-		(s: { type: string }) => s.type !== "group"
+		(s: { type: string }) => s.type !== "group",
 	);
 
 	return (
@@ -21,8 +21,8 @@ export default async function LedgerTemplatesPage() {
 			<div className="flex flex-col gap-1">
 				<h1 className="text-lg font-semibold">Ledger templates</h1>
 				<p className="text-sm text-muted-foreground">
-					Create named presets for charges and payments. When applied, add multiple
-					entries with a shared period.
+					Create named presets for charges and payments. When applied, add
+					multiple entries with a shared period.
 				</p>
 				{activeAddress && (
 					<p className="text-xs text-muted-foreground">
@@ -48,9 +48,7 @@ export default async function LedgerTemplatesPage() {
 				/>
 			) : (
 				<div className="rounded-lg border border-dashed p-8 text-center">
-					<p className="text-sm text-muted-foreground">
-						No address selected
-					</p>
+					<p className="text-sm text-muted-foreground">No address selected</p>
 				</div>
 			)}
 		</div>

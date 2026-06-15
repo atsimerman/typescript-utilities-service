@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@repo/ui/components/button";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { deleteLedgerEntryTemplate } from "@/app/actions/ledger-entry-templates";
-import { EditLedgerTemplateDialog } from "./edit-ledger-template-dialog";
 import { CreateLedgerTemplateDialog } from "./create-ledger-template-dialog";
+import { EditLedgerTemplateDialog } from "./edit-ledger-template-dialog";
 
 type Service = {
 	id: string;
@@ -52,10 +52,7 @@ export function LedgerTemplatesManager({
 	return (
 		<div className="space-y-4">
 			<div className="flex gap-2">
-				<CreateLedgerTemplateDialog
-					addressId={addressId}
-					services={services}
-				/>
+				<CreateLedgerTemplateDialog addressId={addressId} services={services} />
 			</div>
 
 			{templates.length === 0 ? (
@@ -72,12 +69,8 @@ export function LedgerTemplatesManager({
 								<th className="px-4 py-3 text-left font-medium">
 									Template name
 								</th>
-								<th className="px-4 py-3 text-left font-medium">
-									Lines
-								</th>
-								<th className="px-4 py-3 text-right font-medium">
-									Actions
-								</th>
+								<th className="px-4 py-3 text-left font-medium">Lines</th>
+								<th className="px-4 py-3 text-right font-medium">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -96,7 +89,6 @@ export function LedgerTemplatesManager({
 											<EditLedgerTemplateDialog
 												templateId={template.id}
 												services={services}
-												addressId={addressId}
 											/>
 											<Button
 												variant="ghost"

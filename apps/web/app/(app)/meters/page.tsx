@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { fetchAddresses } from "@/app/actions/addresses";
 import { fetchMeterReadings } from "@/app/actions/meter-readings";
 import { fetchMeters } from "@/app/actions/meters";
@@ -5,7 +6,6 @@ import { fetchServices } from "@/app/actions/services";
 import { AddMeterDialog } from "@/components/add-meter-dialog";
 import { AddReadingDialog } from "@/components/add-reading-dialog";
 import { AddReadingsFromTemplateButton } from "@/components/add-readings-from-template-button";
-import Link from "next/link";
 
 function formatDate(date: Date | string | null) {
 	if (!date) return "—";
@@ -31,7 +31,7 @@ export default async function MetersPage({
 	const selectedMeterId =
 		params.meterId && meters.some((m) => m.id === params.meterId)
 			? params.meterId
-			: meters[0]?.id ?? null;
+			: (meters[0]?.id ?? null);
 	const selectedMeter = selectedMeterId
 		? meters.find((m) => m.id === selectedMeterId)
 		: null;
@@ -196,7 +196,9 @@ export default async function MetersPage({
 						</div>
 						{selectedMeter && (
 							<div className="flex gap-2">
-								<AddReadingsFromTemplateButton addressId={activeAddress?.id || ""} />
+								<AddReadingsFromTemplateButton
+									addressId={activeAddress?.id || ""}
+								/>
 								<AddReadingDialog
 									meterId={selectedMeter.id}
 									meterName={selectedMeter.name}

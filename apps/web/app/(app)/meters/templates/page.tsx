@@ -1,6 +1,6 @@
 import { fetchAddresses } from "@/app/actions/addresses";
-import { fetchMeters } from "@/app/actions/meters";
 import { fetchMeterReadingTemplates } from "@/app/actions/meter-reading-templates";
+import { fetchMeters } from "@/app/actions/meters";
 import { MeterTemplatesManager } from "@/components/meter-templates-manager";
 
 export default async function MeterTemplatesPage() {
@@ -17,8 +17,8 @@ export default async function MeterTemplatesPage() {
 			<div className="flex flex-col gap-1">
 				<h1 className="text-lg font-semibold">Meter readings templates</h1>
 				<p className="text-sm text-muted-foreground">
-					Create named presets of multiple meters. When applied, add readings for
-					all meters in one dialog.
+					Create named presets of multiple meters. When applied, add readings
+					for all meters in one dialog.
 				</p>
 				{activeAddress && (
 					<p className="text-xs text-muted-foreground">
@@ -44,9 +44,7 @@ export default async function MeterTemplatesPage() {
 				/>
 			) : (
 				<div className="rounded-lg border border-dashed p-8 text-center">
-					<p className="text-sm text-muted-foreground">
-						No address selected
-					</p>
+					<p className="text-sm text-muted-foreground">No address selected</p>
 				</div>
 			)}
 		</div>

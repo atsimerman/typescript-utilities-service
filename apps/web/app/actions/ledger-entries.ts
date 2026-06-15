@@ -2,8 +2,7 @@
 
 import { createDB, schema } from "@repo/database";
 import { normalizePeriodFirstDay } from "@/lib/ledger-period";
-
-export type LedgerEntryType = "charge" | "payment" | "adjustment";
+import type { LedgerEntryType } from "@/types/ledger-entry";
 
 export async function fetchLedgerEntries(addressId: string) {
 	try {
@@ -26,9 +25,7 @@ export async function fetchLedgerEntries(addressId: string) {
 
 		return (entries || []).map((row) => ({
 			...row,
-			service: row.serviceId
-				? (servicesById.get(row.serviceId) ?? null)
-				: null,
+			service: row.serviceId ? (servicesById.get(row.serviceId) ?? null) : null,
 		}));
 	} catch (error) {
 		console.error("Failed to fetch ledger entries:", error);

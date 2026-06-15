@@ -1,12 +1,12 @@
 "use client";
 
 import { Button } from "@repo/ui/components/button";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import { Trash2Icon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { deleteMeterReadingTemplate } from "@/app/actions/meter-reading-templates";
-import { EditMeterTemplateDialog } from "./edit-meter-template-dialog";
 import { CreateMeterTemplateDialog } from "./create-meter-template-dialog";
+import { EditMeterTemplateDialog } from "./edit-meter-template-dialog";
 
 type Meter = {
 	id: string;
@@ -57,10 +57,7 @@ export function MeterTemplatesManager({
 	return (
 		<div className="space-y-4">
 			<div className="flex gap-2">
-				<CreateMeterTemplateDialog
-					addressId={addressId}
-					meters={meters}
-				/>
+				<CreateMeterTemplateDialog addressId={addressId} meters={meters} />
 			</div>
 
 			{templates.length === 0 ? (
@@ -77,12 +74,8 @@ export function MeterTemplatesManager({
 								<th className="px-4 py-3 text-left font-medium">
 									Template name
 								</th>
-								<th className="px-4 py-3 text-left font-medium">
-									Meters
-								</th>
-								<th className="px-4 py-3 text-right font-medium">
-									Actions
-								</th>
+								<th className="px-4 py-3 text-left font-medium">Meters</th>
+								<th className="px-4 py-3 text-right font-medium">Actions</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -101,7 +94,6 @@ export function MeterTemplatesManager({
 											<EditMeterTemplateDialog
 												templateId={template.id}
 												meters={meters}
-												addressId={addressId}
 											/>
 											<Button
 												variant="ghost"

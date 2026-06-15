@@ -36,11 +36,9 @@ type TemplateLineInput = {
 export function EditLedgerTemplateDialog({
 	templateId,
 	services,
-	addressId,
 }: {
 	templateId: string;
 	services: Service[];
-	addressId: string;
 }) {
 	const router = useRouter();
 	const [open, setOpen] = React.useState(false);
@@ -50,27 +48,27 @@ export function EditLedgerTemplateDialog({
 	const [lines, setLines] = React.useState<TemplateLineInput[]>([]);
 	const [isLoadingData, setIsLoadingData] = React.useState(true);
 
-	React.useEffect(() => {
-		if (open && isLoadingData) {
-			loadTemplate();
-		}
-	}, [open]);
-
-	async function loadTemplate() {
+	const loadTemplate = React.useCallback(async () => {
 		setIsLoadingData(true);
 		const template = await fetchLedgerEntryTemplateWithLines(templateId);
 		if (template) {
 			setName(template.name);
 			setLines(
-				template.lines.map((l, idx) => ({
+				template.lines.map((l) => ({
 					tempId: l.id,
 					entryType: l.entryType as "charge" | "payment",
 					serviceId: l.serviceId || "",
-				}))
+				})),
 			);
 		}
 		setIsLoadingData(false);
-	}
+	}, [templateId]);
+
+	React.useEffect(() => {
+		if (open && isLoadingData) {
+			loadTemplate();
+		}
+	}, [open, isLoadingData, loadTemplate]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -115,12 +113,10 @@ export function EditLedgerTemplateDialog({
 	function updateLine(
 		tempId: string,
 		key: "entryType" | "serviceId",
-		value: string
+		value: string,
 	) {
 		setLines(
-			lines.map((l) =>
-				l.tempId === tempId ? { ...l, [key]: value } : l
-			)
+			lines.map((l) => (l.tempId === tempId ? { ...l, [key]: value } : l)),
 		);
 	}
 
@@ -131,7 +127,7 @@ export function EditLedgerTemplateDialog({
 					<Pencil className="size-4" />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
+			<DialogContent className="sm:max-w-xl overflow-y-auto">
 				<DialogHeader>
 					<DialogTitle>Edit ledger template</DialogTitle>
 					<DialogDescription>
@@ -165,7 +161,9 @@ export function EditLedgerTemplateDialog({
 
 						<div className="space-y-2">
 							<div className="flex items-center justify-between">
-								<label className="text-sm font-medium">Lines</label>
+								<span className="text-sm font-medium cursor-default">
+									Lines
+								</span>
 								<Button
 									type="button"
 									variant="outline"
@@ -175,7 +173,7 @@ export function EditLedgerTemplateDialog({
 									<span className="text-xs">+ Add line</span>
 								</Button>
 							</div>
-							<div className="space-y-2 max-h-48 overflow-y-auto border rounded p-2">
+							<div className="space-y-2 max-h-96 overflow-y-auto border rounded p-2">
 								{lines.length === 0 ? (
 									<p className="text-xs text-muted-foreground p-2">
 										No lines. Add one to get started.
@@ -187,17 +185,17 @@ export function EditLedgerTemplateDialog({
 											className="flex gap-2 items-end p-2 border rounded bg-muted/50"
 										>
 											<div className="flex-1">
-												<label className="text-xs font-medium block mb-1">
+												<label
+													htmlFor="type"
+													className="text-xs font-medium block mb-1"
+												>
 													Type
 												</label>
 												<select
+													id="type"
 													value={line.entryType}
 													onChange={(e) =>
-														updateLine(
-															line.tempId,
-															"entryType",
-															e.target.value
-														)
+														updateLine(line.tempId, "entryType", e.target.value)
 													}
 													className="w-full h-8 rounded border border-input bg-background px-2 py-1 text-xs"
 												>
@@ -206,17 +204,17 @@ export function EditLedgerTemplateDialog({
 												</select>
 											</div>
 											<div className="flex-1">
-												<label className="text-xs font-medium block mb-1">
+												<label
+													htmlFor="service"
+													className="text-xs font-medium block mb-1"
+												>
 													Service (optional)
 												</label>
 												<select
+													id="service"
 													value={line.serviceId || ""}
 													onChange={(e) =>
-														updateLine(
-															line.tempId,
-															"serviceId",
-															e.target.value
-														)
+														updateLine(line.tempId, "serviceId", e.target.value)
 													}
 													className="w-full h-8 rounded border border-input bg-background px-2 py-1 text-xs"
 												>

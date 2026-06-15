@@ -55,9 +55,7 @@ export async function createAddressServiceConfig(data: {
 		}
 
 		for (const row of existing) {
-			if (
-				rangesOverlap(newFrom, newTo, row.activeFrom, row.activeTo)
-			) {
+			if (rangesOverlap(newFrom, newTo, row.activeFrom, row.activeTo)) {
 				return {
 					error:
 						"Pricing periods for the same service and address cannot overlap.",
@@ -103,7 +101,9 @@ export async function fetchAddressServiceConfigs(addressId: string) {
 			db.query.services.findMany(),
 		]);
 
-		const servicesById = new Map(services.map((service) => [service.id, service]));
+		const servicesById = new Map(
+			services.map((service) => [service.id, service]),
+		);
 
 		const withServices = (configs || []).map((config) => ({
 			...config,
@@ -116,4 +116,3 @@ export async function fetchAddressServiceConfigs(addressId: string) {
 		return [];
 	}
 }
-

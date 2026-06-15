@@ -12,17 +12,11 @@ import {
 import { Input } from "@repo/ui/components/input";
 import { useRouter } from "next/navigation";
 import * as React from "react";
-import {
-	fetchLedgerEntryTemplateWithLines,
-	fetchLedgerEntryTemplates,
-} from "@/app/actions/ledger-entry-templates";
 import { createLedgerEntriesFromTemplate } from "@/app/actions/ledger-entries";
-
-type Service = {
-	id: string;
-	name: string;
-	type: string;
-};
+import {
+	fetchLedgerEntryTemplates,
+	fetchLedgerEntryTemplateWithLines,
+} from "@/app/actions/ledger-entry-templates";
 
 type TemplateLine = {
 	id: string;
@@ -39,8 +33,9 @@ export function AddLedgerFromTemplateButton({
 	const [templates, setTemplates] = React.useState<
 		Array<{ id: string; name: string; lineCount: number }>
 	>([]);
-	const [selectedTemplate, setSelectedTemplate] =
-		React.useState<typeof templates[number] | null>(null);
+	const [selectedTemplate, setSelectedTemplate] = React.useState<
+		(typeof templates)[number] | null
+	>(null);
 	const [open, setOpen] = React.useState(false);
 
 	React.useEffect(() => {
@@ -61,7 +56,7 @@ export function AddLedgerFromTemplateButton({
 					Add ledger from template
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-lg">
+			<DialogContent className="sm:max-w-2xl">
 				<DialogHeader>
 					<DialogTitle>Add ledger from template</DialogTitle>
 					<DialogDescription>
@@ -73,6 +68,7 @@ export function AddLedgerFromTemplateButton({
 					<div className="space-y-2">
 						{templates.map((template) => (
 							<button
+								type="button"
 								key={template.id}
 								onClick={() => setSelectedTemplate(template)}
 								className="w-full p-3 text-left rounded border border-input hover:bg-muted/50 transition-colors"
@@ -88,8 +84,6 @@ export function AddLedgerFromTemplateButton({
 				) : (
 					<ApplyLedgerFromTemplateForm
 						templateId={selectedTemplate.id}
-						templateName={selectedTemplate.name}
-						addressId={addressId}
 						onClose={() => {
 							setOpen(false);
 							setSelectedTemplate(null);
@@ -105,14 +99,10 @@ export function AddLedgerFromTemplateButton({
 
 function ApplyLedgerFromTemplateForm({
 	templateId,
-	templateName,
-	addressId,
 	onClose,
 	onBack,
 }: {
 	templateId: string;
-	templateName: string;
-	addressId: string;
 	onClose: () => void;
 	onBack: () => void;
 }) {
@@ -120,18 +110,14 @@ function ApplyLedgerFromTemplateForm({
 	const [error, setError] = React.useState<string | null>(null);
 	const [details, setDetails] = React.useState<string[] | null>(null);
 	const [period, setPeriod] = React.useState(
-		new Date().toISOString().slice(0, 7)
+		new Date().toISOString().slice(0, 7),
 	);
 	const [lines, setLines] = React.useState<TemplateLine[]>([]);
 	const [values, setValues] = React.useState<Map<string, string>>(new Map());
 	const [notes, setNotes] = React.useState<Map<string, string>>(new Map());
 	const [isLoadingTemplate, setIsLoadingTemplate] = React.useState(true);
 
-	React.useEffect(() => {
-		loadTemplate();
-	}, []);
-
-	async function loadTemplate() {
+	const loadTemplate = React.useCallback(async () => {
 		const template = await fetchLedgerEntryTemplateWithLines(templateId);
 		if (template) {
 			const templateLines = template.lines.map((line) => ({
@@ -142,7 +128,11 @@ function ApplyLedgerFromTemplateForm({
 			setLines(templateLines);
 		}
 		setIsLoadingTemplate(false);
-	}
+	}, [templateId]);
+
+	React.useEffect(() => {
+		loadTemplate();
+	}, [loadTemplate]);
 
 	async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
@@ -185,8 +175,8 @@ function ApplyLedgerFromTemplateForm({
 					<div>{error}</div>
 					{details && details.length > 0 && (
 						<ul className="mt-2 ml-4 list-disc text-xs space-y-1">
-							{details.map((detail, idx) => (
-								<li key={idx}>{detail}</li>
+							{details.map((detail) => (
+								<li key={detail}>{detail}</li>
 							))}
 						</ul>
 					)}
@@ -206,11 +196,11 @@ function ApplyLedgerFromTemplateForm({
 				/>
 			</div>
 
-			<div className="space-y-2 py-2 max-h-48 overflow-y-auto border rounded p-3 bg-muted/50">
+			<div className="space-y-2 py-2 max-h-96 overflow-y-auto border rounded p-3 bg-muted/50">
 				{lines.map((line) => (
 					<div key={line.id} className="space-y-1">
 						<div className="flex items-center justify-between">
-							<label className="text-xs font-medium">
+							<label htmlFor="amount" className="text-xs font-medium">
 								<span className="inline-block px-2 py-0.5 rounded text-xs bg-muted text-muted-foreground mr-2">
 									{line.entryType === "charge" ? "Charge" : "Payment"}
 								</span>
@@ -219,6 +209,7 @@ function ApplyLedgerFromTemplateForm({
 						</div>
 						<div className="flex gap-2">
 							<input
+								id="amount"
 								type="number"
 								value={values.get(line.id) || ""}
 								onChange={(e) => {

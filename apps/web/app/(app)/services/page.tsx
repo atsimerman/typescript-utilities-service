@@ -20,8 +20,16 @@ function getConfigStatus(config: {
 	activeTo: Date | string | null;
 }) {
 	const today = new Date();
-	const from = typeof config.activeFrom === "string" ? new Date(config.activeFrom) : config.activeFrom;
-	const to = config.activeTo == null ? null : typeof config.activeTo === "string" ? new Date(config.activeTo) : config.activeTo;
+	const from =
+		typeof config.activeFrom === "string"
+			? new Date(config.activeFrom)
+			: config.activeFrom;
+	const to =
+		config.activeTo == null
+			? null
+			: typeof config.activeTo === "string"
+				? new Date(config.activeTo)
+				: config.activeTo;
 
 	if (from <= today && (!to || to >= today)) return "Current";
 	if (from > today) return "Future";
@@ -41,9 +49,7 @@ export default async function ServicesPage() {
 		: [];
 
 	const groupServices = services.filter((service) => service.type === "group");
-	const attachedServiceIds = [
-		...new Set(configs.map((c) => c.serviceId)),
-	];
+	const attachedServiceIds = [...new Set(configs.map((c) => c.serviceId))];
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
