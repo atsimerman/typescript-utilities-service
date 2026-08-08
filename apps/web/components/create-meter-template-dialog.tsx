@@ -82,11 +82,9 @@ export function CreateMeterTemplateDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 px-2 text-xs">
-					<PlusIcon className="mr-1 size-3" />
-					Create template
-				</Button>
+			<DialogTrigger render={<Button size="sm" className="h-8 px-2 text-xs" />}>
+				<PlusIcon className="mr-1 size-3" />
+				Create template
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md overflow-y-auto">
 				<DialogHeader>

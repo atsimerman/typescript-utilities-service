@@ -65,10 +65,10 @@ export function AddLedgerPaymentDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" variant="outline" className="h-8 text-xs">
-					Add payment
-				</Button>
+			<DialogTrigger
+				render={<Button size="sm" variant="outline" className="h-8 text-xs" />}
+			>
+				Add payment
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -139,10 +139,8 @@ export function AddLedgerPaymentDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Saving…" : "Save payment"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>
@@ -194,10 +192,8 @@ export function AddLedgerChargeDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 text-xs">
-					Add charge
-				</Button>
+			<DialogTrigger render={<Button size="sm" className="h-8 text-xs" />}>
+				Add charge
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -267,10 +263,8 @@ export function AddLedgerChargeDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Saving…" : "Save charge"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>
@@ -322,10 +316,12 @@ export function AddLedgerAdjustmentDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" variant="secondary" className="h-8 text-xs">
-					Add adjustment
-				</Button>
+			<DialogTrigger
+				render={
+					<Button size="sm" variant="secondary" className="h-8 text-xs" />
+				}
+			>
+				Add adjustment
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -395,10 +391,8 @@ export function AddLedgerAdjustmentDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Saving…" : "Save adjustment"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

@@ -67,11 +67,9 @@ export function AddMeterDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 px-2 text-xs">
-					<PlusIcon className="mr-1 size-3" />
-					Add meter
-				</Button>
+			<DialogTrigger render={<Button size="sm" className="h-8 px-2 text-xs" />}>
+				<PlusIcon className="mr-1 size-3" />
+				Add meter
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -165,10 +163,8 @@ export function AddMeterDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Adding…" : "Add meter"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

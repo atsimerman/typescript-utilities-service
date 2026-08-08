@@ -61,11 +61,9 @@ export function AddServiceDialog({ groups = [] }: { groups?: ServiceGroup[] }) {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" className="h-8 px-2 text-xs">
-					<PlusIcon className="mr-1 size-3" />
-					Add service
-				</Button>
+			<DialogTrigger render={<Button size="sm" className="h-8 px-2 text-xs" />}>
+				<PlusIcon className="mr-1 size-3" />
+				Add service
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -154,14 +152,16 @@ export function AddServiceDialog({ groups = [] }: { groups?: ServiceGroup[] }) {
 						>
 							{loading ? "Creating..." : "Create service"}
 						</Button>
-						<DialogClose asChild>
-							<Button
-								type="button"
-								variant="outline"
-								className="h-8 px-3 text-xs"
-							>
-								Cancel
-							</Button>
+						<DialogClose
+							render={
+								<Button
+									type="button"
+									variant="outline"
+									className="h-8 px-3 text-xs"
+								/>
+							}
+						>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

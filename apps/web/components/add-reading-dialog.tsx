@@ -62,11 +62,13 @@ export function AddReadingDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" variant="outline" className="h-8 px-2 text-xs">
-					<PlusIcon className="mr-1 size-3" />
-					Add reading
-				</Button>
+			<DialogTrigger
+				render={
+					<Button size="sm" variant="outline" className="h-8 px-2 text-xs" />
+				}
+			>
+				<PlusIcon className="mr-1 size-3" />
+				Add reading
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -115,10 +117,8 @@ export function AddReadingDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Adding…" : "Add reading"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

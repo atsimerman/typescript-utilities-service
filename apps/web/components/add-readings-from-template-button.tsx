@@ -52,10 +52,12 @@ export function AddReadingsFromTemplateButton({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline" size="sm" className="h-8 px-2 text-xs">
-					Add readings from template
-				</Button>
+			<DialogTrigger
+				render={
+					<Button variant="outline" size="sm" className="h-8 px-2 text-xs" />
+				}
+			>
+				Add readings from template
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-2xl">
 				<DialogHeader>
