@@ -62,16 +62,18 @@ export function AddAddressDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<button
-					type="button"
-					className="flex w-full gap-2 rounded-md border border-sidebar-border bg-transparent px-2 py-1.5 text-sm hover:bg-sidebar-accent"
-				>
-					<div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-						<PlusIcon className="size-4" />
-					</div>
-					<div className="text-muted-foreground font-medium">Add address</div>
-				</button>
+			<DialogTrigger
+				render={
+					<button
+						type="button"
+						className="flex w-full gap-2 rounded-md border border-sidebar-border bg-transparent px-2 py-1.5 text-sm hover:bg-sidebar-accent"
+					/>
+				}
+			>
+				<div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+					<PlusIcon className="size-4" />
+				</div>
+				<div className="text-muted-foreground font-medium">Add address</div>
 			</DialogTrigger>
 			<DialogContent>
 				<DialogHeader>
@@ -163,10 +165,8 @@ export function AddAddressDialog({
 						<Button type="submit" disabled={loading}>
 							{loading ? "Adding..." : "Add Address"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

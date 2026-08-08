@@ -97,11 +97,13 @@ export function AttachServiceDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button size="sm" variant="outline" className="h-8 px-2 text-xs">
-					<PlusIcon className="mr-1 size-3" />
-					Attach service
-				</Button>
+			<DialogTrigger
+				render={
+					<Button size="sm" variant="outline" className="h-8 px-2 text-xs" />
+				}
+			>
+				<PlusIcon className="mr-1 size-3" />
+				Attach service
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
@@ -222,10 +224,8 @@ export function AttachServiceDialog({
 						>
 							{loading ? "Adding…" : "Add pricing version"}
 						</Button>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
-							</Button>
+						<DialogClose render={<Button type="button" variant="outline" />}>
+							Cancel
 						</DialogClose>
 					</div>
 				</form>

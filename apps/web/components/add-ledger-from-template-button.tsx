@@ -51,10 +51,12 @@ export function AddLedgerFromTemplateButton({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="outline" size="sm" className="h-8 px-2 text-xs">
-					Add ledger from template
-				</Button>
+			<DialogTrigger
+				render={
+					<Button variant="outline" size="sm" className="h-8 px-2 text-xs" />
+				}
+			>
+				Add ledger from template
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-2xl">
 				<DialogHeader>

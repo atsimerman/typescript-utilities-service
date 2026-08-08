@@ -101,10 +101,8 @@ export function EditMeterTemplateDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild>
-				<Button variant="ghost" size="sm">
-					<Pencil className="size-4" />
-				</Button>
+			<DialogTrigger render={<Button variant="ghost" size="sm" />}>
+				<Pencil className="size-4" />
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-md overflow-y-auto">
 				<DialogHeader>
