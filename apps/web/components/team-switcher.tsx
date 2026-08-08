@@ -3,6 +3,7 @@
 import {
 	DropdownMenu,
 	DropdownMenuContent,
+	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -136,40 +137,44 @@ export function TeamSwitcher({
 						side={isMobile ? "bottom" : "right"}
 						sideOffset={4}
 					>
-						<DropdownMenuLabel className="text-muted-foreground text-xs">
-							Addresses
-						</DropdownMenuLabel>
-						{safeAddresses.map((address, index) => {
-							const addrLabel = address.label || address.city || "Address";
-							const addrCity = address.city || address.street || "";
-							return (
-								<DropdownMenuItem
-									key={address.id}
-									onClick={() => setActiveAddress(address)}
-									className="gap-2 p-2"
-								>
-									<div className="flex size-6 items-center justify-center rounded-md border font-semibold">
-										{addrLabel.slice(0, 2).toUpperCase()}
-									</div>
-									<div className="flex flex-col flex-1">
-										<span className="text-sm">{addrLabel}</span>
-										<span className="text-xs text-muted-foreground">
-											{addrCity}
-										</span>
-									</div>
-									<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
-								</DropdownMenuItem>
-							);
-						})}
+						<DropdownMenuGroup>
+							<DropdownMenuLabel className="text-muted-foreground text-xs">
+								Addresses
+							</DropdownMenuLabel>
+							{safeAddresses.map((address, index) => {
+								const addrLabel = address.label || address.city || "Address";
+								const addrCity = address.city || address.street || "";
+								return (
+									<DropdownMenuItem
+										key={address.id}
+										onClick={() => setActiveAddress(address)}
+										className="gap-2 p-2"
+									>
+										<div className="flex size-6 items-center justify-center rounded-md border font-semibold">
+											{addrLabel.slice(0, 2).toUpperCase()}
+										</div>
+										<div className="flex flex-col flex-1">
+											<span className="text-sm">{addrLabel}</span>
+											<span className="text-xs text-muted-foreground">
+												{addrCity}
+											</span>
+										</div>
+										<DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
+									</DropdownMenuItem>
+								);
+							})}
+						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						{session?.user && (
-							<div className="p-2">
-								<AddAddressDialog
-									userId={session.user.id}
-									onSuccess={handleAddressAdded}
-									countries={countries}
-								/>
-							</div>
+							<DropdownMenuGroup>
+								<div className="p-2">
+									<AddAddressDialog
+										userId={session.user.id}
+										onSuccess={handleAddressAdded}
+										countries={countries}
+									/>
+								</div>
+							</DropdownMenuGroup>
 						)}
 					</DropdownMenuContent>
 				</DropdownMenu>
