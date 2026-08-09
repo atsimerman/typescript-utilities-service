@@ -1,9 +1,9 @@
 import { createDB } from "@repo/database";
-import { betterAuth } from "better-auth";
+import { type Auth, type BetterAuthOptions, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin } from "better-auth/plugins";
 
-export default function createAuth() {
+export default function createAuth(): Auth<BetterAuthOptions> {
 	const db = createDB({ pgUrl: process.env.DATABASE_URL ?? "" });
 
 	return betterAuth({
@@ -23,5 +23,5 @@ export default function createAuth() {
 		plugins: [admin()],
 		secret: process.env.BETTER_AUTH_SECRET,
 		trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? [],
-	});
+	}) as unknown as Auth<BetterAuthOptions>;
 }

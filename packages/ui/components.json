@@ -16,5 +16,8 @@
 		"hooks": "@repo/ui/hooks",
 		"lib": "@repo/ui/lib",
 		"ui": "@repo/ui/components"
+	},
+	"registries": {
+		"@better-auth-ui": "https://better-auth-ui.com/r/{style}/{name}.json"
 	}
 }

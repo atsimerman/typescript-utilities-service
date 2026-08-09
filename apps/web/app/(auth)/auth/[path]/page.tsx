@@ -1,22 +1,23 @@
-import { AuthView } from "@daveyplate/better-auth-ui";
-import { authViewPaths } from "@daveyplate/better-auth-ui/server";
-
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-	return Object.values(authViewPaths).map((path) => ({ path }));
-}
+import { viewPaths } from "@better-auth-ui/core";
+import { Auth } from "@repo/ui/components/auth/auth";
+import { notFound } from "next/navigation";
 
 export default async function AuthPage({
 	params,
 }: {
-	params: Promise<{ path: string }>;
+	params: Promise<{
+		path: string;
+	}>;
 }) {
 	const { path } = await params;
 
+	if (!Object.values(viewPaths.auth).includes(path)) {
+		notFound();
+	}
+
 	return (
-		<main className="container mx-auto flex justify-center p-4 md:p-6">
-			<AuthView path={path} />
-		</main>
+		<div className="flex justify-center my-auto p-4 md:p-6">
+			<Auth path={path} />
+		</div>
 	);
 }
