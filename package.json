@@ -9,7 +9,7 @@
 		"clear": "find . -path ./.pnpm-store -prune -o \\( -name node_modules -o -name .next -o -name .turbo -o -name dist -o -name cache \\) -type d -prune -exec rm -rf {} +"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.3.13",
+		"@biomejs/biome": "2.5.7",
 		"turbo": "^2.7.6",
 		"typescript": "5.9.3",
 		"ultracite": "^7.1.2"
