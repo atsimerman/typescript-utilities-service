@@ -5,7 +5,8 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev db:studio --parallel",
 		"lint": "turbo run lint",
-		"check-types": "turbo run check-types"
+		"check-types": "turbo run check-types",
+		"clear": "find . -path ./.pnpm-store -prune -o \\( -name node_modules -o -name .next -o -name .turbo -o -name dist -o -name cache \\) -type d -prune -exec rm -rf {} +"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.3.13",
