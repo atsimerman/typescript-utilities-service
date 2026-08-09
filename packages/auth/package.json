@@ -22,7 +22,7 @@
 		"better-auth": "^1.6.26"
 	},
 	"devDependencies": {
-		"@dotenvx/dotenvx": "^1.52.0",
+		"@dotenvx/dotenvx": "^2.20.1",
 		"@types/node": "^25.0.10"
 	}
 }

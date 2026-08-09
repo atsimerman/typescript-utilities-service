@@ -23,7 +23,7 @@
 		"pg": "^8.17.2"
 	},
 	"devDependencies": {
-		"@dotenvx/dotenvx": "^1.52.0",
+		"@dotenvx/dotenvx": "^2.20.1",
 		"@types/node": "^25.0.10",
 		"drizzle-kit": "^0.31.8"
 	}

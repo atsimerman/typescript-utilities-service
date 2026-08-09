@@ -29,7 +29,7 @@
 		"zod": "^4.4.3"
 	},
 	"devDependencies": {
-		"@dotenvx/dotenvx": "^1.52.0",
+		"@dotenvx/dotenvx": "^2.20.1",
 		"@repo/biome-config": "workspace:^",
 		"@repo/typescript-config": "workspace:*",
 		"@tailwindcss/postcss": "^4.3.1",
