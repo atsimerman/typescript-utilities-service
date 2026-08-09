@@ -1,28 +1,27 @@
-import createAuth from "@repo/auth";
-import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 
-export async function proxy(request: NextRequest) {
-	const auth = createAuth();
-	const session = await auth.api.getSession({
-		headers: await headers(),
+/**
+ * Layouts can't read the current pathname on the server (Next has no API for
+ * it), so we stamp it onto a request header here for `(app)/layout.tsx` to
+ * build a `redirectTo` for unauthenticated visitors. Auth itself is enforced
+ * in the layout via `ensureSession` — if this proxy's matcher ever drifts out
+ * of sync with the routes, the worst case is a missing deep-link redirect,
+ * not an auth bypass.
+ */
+export function proxy(request: NextRequest) {
+	const requestHeaders = new Headers(request.headers);
+	requestHeaders.set(
+		"x-pathname",
+		request.nextUrl.pathname + request.nextUrl.search,
+	);
+
+	return NextResponse.next({
+		request: {
+			headers: requestHeaders,
+		},
 	});
-
-	if (!session) {
-		const redirectTo = request.nextUrl.pathname + request.nextUrl.search;
-		const url = new URL("/auth/sign-in", request.url);
-		url.searchParams.set("redirectTo", redirectTo);
-
-		return NextResponse.redirect(url);
-	}
-
-	return NextResponse.next();
 }
 
 export const config = {
-	matcher: [
-		"/",
-		"/account/:path*",
-		// Add any other protected routes here
-	],
+	matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
