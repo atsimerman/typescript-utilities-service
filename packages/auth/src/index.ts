@@ -12,7 +12,10 @@ export default function createAuth(): Auth<BetterAuthOptions> {
 				generateId: "uuid",
 			},
 		},
-		baseURL: process.env.BETTER_AUTH_URL ?? "http://localhost:3000",
+		baseURL:
+			process.env.BETTER_AUTH_URL ??
+			process.env.PORTLESS_URL ??
+			"http://localhost:3000",
 		database: drizzleAdapter(db, {
 			provider: "pg",
 			usePlural: true,
@@ -22,6 +25,9 @@ export default function createAuth(): Auth<BetterAuthOptions> {
 		},
 		plugins: [admin()],
 		secret: process.env.BETTER_AUTH_SECRET,
-		trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? [],
+		trustedOrigins: [
+			...(process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(",") ?? []),
+			...(process.env.PORTLESS_URL ? [process.env.PORTLESS_URL] : []),
+		],
 	}) as unknown as Auth<BetterAuthOptions>;
 }

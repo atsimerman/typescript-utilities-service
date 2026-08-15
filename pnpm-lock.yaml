@@ -11,6 +11,9 @@ importers:
       '@biomejs/biome':
         specifier: 2.5.7
         version: 2.5.7
+      portless:
+        specifier: ^0.15.5
+        version: 0.15.5
       turbo:
         specifier: ^2.10.9
         version: 2.10.9
@@ -1723,6 +1726,12 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
+  portless@0.15.5:
+    resolution: {integrity: sha512-zmJu4Q8/fY54oVUT/5NnmF4Ih8wTdCvCf6JCN783dRYl9mXkJBzXSckX2lztGCLIbM70varDjCudAbGKT73XPg==}
+    engines: {node: '>=24'}
+    os: [darwin, linux, win32]
+    hasBin: true
+
   postcss@8.5.23:
     resolution: {integrity: sha512-g50586zr4bZmwFiTlflMu8E0bDTb5I5gertgwAKmsdUlTQIhZtunzUlD1WSzwcVWPoAVpsrA6vlfCD7oXvRwgg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -3086,6 +3095,8 @@ snapshots:
       split2: 4.2.0
 
   picocolors@1.1.1: {}
+
+  portless@0.15.5: {}
 
   postcss@8.5.23:
     dependencies:

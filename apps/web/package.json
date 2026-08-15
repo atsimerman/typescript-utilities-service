@@ -4,7 +4,7 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
-		"dev": "dotenvx run --env-file=/workspace/.env -- next dev --port 3000",
+		"dev": "PORTLESS_HTTPS=0 PORTLESS_PORT=8080 portless run dotenvx run --env-file=/workspace/.env -- next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "biome check --write",
