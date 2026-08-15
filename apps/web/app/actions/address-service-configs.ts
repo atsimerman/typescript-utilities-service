@@ -1,6 +1,6 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 
 function parseDate(d: Date | string): Date {
 	return typeof d === "string" ? new Date(d) : d;
@@ -28,13 +28,7 @@ export async function createAddressServiceConfig(data: {
 	pricePerUnit?: number | null;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const activeFrom = data.activeFrom.trim();
 		if (!activeFrom) return { error: "Active from is required" };
@@ -84,14 +78,7 @@ export async function createAddressServiceConfig(data: {
 
 export async function fetchAddressServiceConfigs(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const [configs, services] = await Promise.all([
 			db.query.addressServiceConfigs.findMany({

@@ -1,17 +1,10 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 
 export async function fetchMeters(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const [meters, services] = await Promise.all([
 			db.query.meters.findMany({
@@ -42,13 +35,7 @@ export async function createMeter(data: {
 	installedAt: string;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const name = data.name.trim();
 		const unit = data.unit.trim();

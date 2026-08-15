@@ -1,19 +1,12 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 import { normalizePeriodFirstDay } from "@/lib/ledger-period";
 import type { LedgerEntryType } from "@/types/ledger-entry";
 
 export async function fetchLedgerEntries(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const entries = await db.query.ledgerEntries.findMany({
 			where: (e, { eq }) => eq(e.addressId, addressId),
@@ -35,13 +28,7 @@ export async function fetchLedgerEntries(addressId: string) {
 
 export async function fetchAddressCurrency(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return null;
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const address = await db.query.addresses.findFirst({
 			where: (a, { eq }) => eq(a.id, addressId),
@@ -79,18 +66,12 @@ export async function createLedgerEntry(data: {
 	unitPriceMinor?: number | null;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
 		const periodDay = normalizePeriodFirstDay(data.period);
 		if (!periodDay) {
 			return { error: "Invalid period (use YYYY-MM)" };
 		}
 
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		let amountMinor: number;
 		const major = data.amountMajor;
@@ -147,13 +128,7 @@ export async function createLedgerEntry(data: {
 
 export async function sumLedgerAmountsForAddress(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return 0;
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const rows = await db.query.ledgerEntries.findMany({
 			where: (e, { eq }) => eq(e.addressId, addressId),
@@ -173,18 +148,12 @@ export async function createLedgerEntriesFromTemplate(data: {
 	rows: Array<{ lineId: string; amountMajor: number; note?: string }>;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
 		const periodDay = normalizePeriodFirstDay(data.period);
 		if (!periodDay) {
 			return { error: "Invalid period (use YYYY-MM)" };
 		}
 
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		// Fetch template and verify it exists
 		const template = await db.query.ledgerEntryTemplates.findFirst({

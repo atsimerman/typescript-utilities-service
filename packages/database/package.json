@@ -25,6 +25,7 @@
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^2.20.1",
 		"@types/node": "^25.0.10",
+		"@types/pg": "^8.21.0",
 		"drizzle-kit": "^0.31.8"
 	}
 }

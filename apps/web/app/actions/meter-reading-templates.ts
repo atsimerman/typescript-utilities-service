@@ -1,17 +1,10 @@
 "use server";
 
-import { createDB, eq, schema } from "@repo/database";
+import { eq, getDB, schema } from "@repo/database";
 
 export async function fetchMeterReadingTemplates(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const templates = await db.query.meterReadingTemplates.findMany({
 			where: (t, { eq }) => eq(t.addressId, addressId),
@@ -40,13 +33,7 @@ export async function fetchMeterReadingTemplates(addressId: string) {
 
 export async function fetchMeterReadingTemplateWithLines(templateId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return null;
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const template = await db.query.meterReadingTemplates.findFirst({
 			where: (t, { eq }) => eq(t.id, templateId),
@@ -84,13 +71,7 @@ export async function createMeterReadingTemplate(data: {
 	meterIds: string[];
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const name = data.name.trim();
 		if (!name) {
@@ -148,13 +129,7 @@ export async function updateMeterReadingTemplate(data: {
 	meterIds: string[];
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const name = data.name.trim();
 		if (!name) {
@@ -213,13 +188,7 @@ export async function updateMeterReadingTemplate(data: {
 
 export async function deleteMeterReadingTemplate(templateId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const template = await db.query.meterReadingTemplates.findFirst({
 			where: (t, { eq }) => eq(t.id, templateId),

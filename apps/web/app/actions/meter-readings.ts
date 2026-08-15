@@ -1,17 +1,10 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 
 export async function fetchMeterReadings(meterId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const readings = await db.query.meterReadings.findMany({
 			where: (r, { eq }) => eq(r.meterId, meterId),
@@ -31,13 +24,7 @@ export async function createMeterReading(data: {
 	value: number;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const readingDate = data.readingDate.trim();
 		if (!readingDate) return { error: "Reading date is required" };
@@ -100,13 +87,7 @@ export async function createMeterReadingsFromTemplate(data: {
 	values: Array<{ meterId: string; value: number }>;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const readingDate = data.readingDate.trim();
 		if (!readingDate) return { error: "Reading date is required" };

@@ -1,6 +1,6 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 
 type ServiceType = "group" | "fixed" | "metered";
 
@@ -11,13 +11,7 @@ export async function createService(data: {
 	parentId?: string | null;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const trimmedName = data.name.trim();
 		const trimmedSlug = data.slug.trim();

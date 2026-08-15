@@ -1,17 +1,10 @@
 "use server";
 
-import { createDB, eq, schema } from "@repo/database";
+import { eq, getDB, schema } from "@repo/database";
 
 export async function fetchLedgerEntryTemplates(addressId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			console.error("DATABASE_URL is not set");
-			return [];
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const templates = await db.query.ledgerEntryTemplates.findMany({
 			where: (t, { eq }) => eq(t.addressId, addressId),
@@ -40,13 +33,7 @@ export async function fetchLedgerEntryTemplates(addressId: string) {
 
 export async function fetchLedgerEntryTemplateWithLines(templateId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return null;
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const template = await db.query.ledgerEntryTemplates.findFirst({
 			where: (t, { eq }) => eq(t.id, templateId),
@@ -86,13 +73,7 @@ export async function createLedgerEntryTemplate(data: {
 	lines: Array<{ entryType: "charge" | "payment"; serviceId?: string }>;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const name = data.name.trim();
 		if (!name) {
@@ -159,13 +140,7 @@ export async function updateLedgerEntryTemplate(data: {
 	lines: Array<{ entryType: "charge" | "payment"; serviceId?: string }>;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const name = data.name.trim();
 		if (!name) {
@@ -233,13 +208,7 @@ export async function updateLedgerEntryTemplate(data: {
 
 export async function deleteLedgerEntryTemplate(templateId: string) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const template = await db.query.ledgerEntryTemplates.findFirst({
 			where: (t, { eq }) => eq(t.id, templateId),

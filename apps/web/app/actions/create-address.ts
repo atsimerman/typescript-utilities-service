@@ -1,6 +1,6 @@
 "use server";
 
-import { createDB, schema } from "@repo/database";
+import { getDB, schema } from "@repo/database";
 
 export async function createAddress(data: {
 	label: string;
@@ -12,13 +12,7 @@ export async function createAddress(data: {
 	userId: string;
 }) {
 	try {
-		if (!process.env.DATABASE_URL) {
-			return { error: "Database URL is not set" };
-		}
-
-		const db = createDB({
-			pgUrl: process.env.DATABASE_URL,
-		});
+		const db = getDB();
 
 		const result = await db
 			.insert(schema.addresses)
