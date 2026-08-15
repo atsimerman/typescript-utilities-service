@@ -5,6 +5,20 @@
 		"build": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"env": [
+				"DATABASE_URL",
+				"BETTER_AUTH_SECRET",
+				"BETTER_AUTH_URL",
+				"BETTER_AUTH_TRUSTED_ORIGINS"
+			],
+			"passThroughEnv": [
+				"VERCEL",
+				"VERCEL_ENV",
+				"VERCEL_URL",
+				"VERCEL_BRANCH_URL",
+				"VERCEL_PROJECT_PRODUCTION_URL",
+				"PORTLESS_URL"
+			],
 			"outputs": [".next/**", "!.next/cache/**"]
 		},
 		"lint": {
