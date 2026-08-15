@@ -7,7 +7,7 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"auth:generate": "dotenvx run --env-file=/workspace/.env -- pnpm dlx @better-auth/cli generate --config ./src/index.ts --output ../database/src/schema/auth.ts"
+		"auth:generate": "dotenvx run --env-file=/workspace/.env -- pnpm dlx @better-auth/cli generate --config ./src/index.ts --output ../database/src/schema/auth.sql.ts"
 	},
 	"exports": {
 		".": {
