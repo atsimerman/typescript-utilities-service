@@ -42,20 +42,23 @@ export async function generateLedgerReceipt({
 			return { success: false, error: "Could not fetch currency information" };
 		}
 
-		if (filters.period && !normalizePeriodFirstDay(filters.period)) {
+		const normalizedPeriod = filters.period
+			? normalizePeriodFirstDay(filters.period)
+			: null;
+
+		if (filters.period && !normalizedPeriod) {
 			return { success: false, error: "Invalid period format" };
 		}
 
 		const filtered = applyFilters(entries, filters);
 
 		const labelParts: string[] = [];
-		if (filters.period) {
-			const normalized = normalizePeriodFirstDay(filters.period)!;
-			labelParts.push(formatPeriodLabel(normalized));
+		if (normalizedPeriod) {
+			labelParts.push(formatPeriodLabel(normalizedPeriod));
 		}
 		if (filters.type) {
 			labelParts.push(
-				filters.type.charAt(0).toUpperCase() + filters.type.slice(1) + "s",
+				`${filters.type.charAt(0).toUpperCase()} ${filters.type.slice(1)} s`,
 			);
 		}
 		const filtersLabel =
@@ -80,10 +83,11 @@ export async function generateLedgerReceipt({
 
 		for (const entry of filtered) {
 			const serviceName = entry.service?.name ?? "Other charge";
-			if (!groupedByService.has(serviceName)) {
-				groupedByService.set(serviceName, { entries: [], total: 0 });
+			let group = groupedByService.get(serviceName);
+			if (!group) {
+				group = { entries: [], total: 0 };
+				groupedByService.set(serviceName, group);
 			}
-			const group = groupedByService.get(serviceName)!;
 			group.entries.push(entry);
 			group.total += entry.amount;
 		}
