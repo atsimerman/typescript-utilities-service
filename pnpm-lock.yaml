@@ -115,6 +115,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^2.20.1
         version: 2.20.1
+      '@repo/biome-config':
+        specifier: workspace:*
+        version: link:../biome-config
       '@types/node':
         specifier: ^25.0.10
         version: 25.2.0
@@ -136,6 +139,9 @@ importers:
       '@dotenvx/dotenvx':
         specifier: ^2.20.1
         version: 2.20.1
+      '@repo/biome-config':
+        specifier: workspace:*
+        version: link:../biome-config
       '@types/node':
         specifier: ^25.0.10
         version: 25.2.0

@@ -25,14 +25,15 @@
 			"dependsOn": ["^lint"]
 		},
 		"check-types": {
-			"dependsOn": ["^check-types"]
+			"dependsOn": ["^build"]
 		},
 		"dev": {
 			"cache": false,
 			"persistent": true
 		},
 		"db:studio": {
-			"dependsOn": ["^dev"]
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

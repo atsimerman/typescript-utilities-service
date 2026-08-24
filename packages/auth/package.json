@@ -23,6 +23,7 @@
 	},
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^2.20.1",
+		"@repo/biome-config": "workspace:*",
 		"@types/node": "^25.0.10"
 	}
 }

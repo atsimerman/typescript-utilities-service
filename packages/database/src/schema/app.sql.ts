@@ -13,7 +13,7 @@ import {
 	uniqueIndex,
 	uuid,
 } from "drizzle-orm/pg-core";
-import { users } from "./auth.sql.js";
+import { users } from "./auth.sql.ts";
 
 export const currencies = pgTable("currencies", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),

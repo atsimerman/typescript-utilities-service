@@ -2,10 +2,14 @@
 	"name": "utilities-service",
 	"private": true,
 	"scripts": {
-		"build": "turbo run build",
 		"dev": "turbo run dev db:studio --parallel",
-		"lint": "turbo run lint",
+		"build": "turbo run build",
+		"build:web": "turbo run build --filter=web",
 		"check-types": "turbo run check-types",
+		"lint": "turbo run lint",
+		"lint:ci": "biome ci .",
+		"deploy": "vercel deploy",
+		"deploy:prod": "vercel deploy --prod",
 		"clear": "find . -path ./.pnpm-store -prune -o \\( -name node_modules -o -name .next -o -name .turbo -o -name dist -o -name cache \\) -type d -prune -exec rm -rf {} +"
 	},
 	"devDependencies": {

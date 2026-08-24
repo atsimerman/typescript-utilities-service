@@ -7,7 +7,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch",
-		"db:push": "dotenvx run --env-file=/workspace/.env --quiet -- drizzle-kit push",
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "dotenvx run --env-file=/workspace/.env --quiet -- drizzle-kit migrate",
 		"db:studio": "dotenvx run --env-file=/workspace/.env --quiet -- drizzle-kit studio"
 	},
 	"exports": {
@@ -24,6 +25,7 @@
 	},
 	"devDependencies": {
 		"@dotenvx/dotenvx": "^2.20.1",
+		"@repo/biome-config": "workspace:*",
 		"@types/node": "^25.0.10",
 		"@types/pg": "^8.21.0",
 		"drizzle-kit": "^0.31.8"
