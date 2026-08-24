@@ -1,18 +1,24 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.12/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
 	"root": true,
+	"vcs": {
+		"enabled": true,
+		"clientKind": "git",
+		"useIgnoreFile": true
+	},
 	"files": {
 		"includes": [
 			"**",
 			"!**/*.css",
 			"!src/components/ui/**/*",
-			"!migrations/**/*"
+			"!migrations/**/*",
+			"!**/drizzle/**/*"
 		]
 	},
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"preset": "recommended"
 		}
 	},
 	"formatter": {

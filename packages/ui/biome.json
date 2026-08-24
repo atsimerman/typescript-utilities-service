@@ -1,5 +1,58 @@
 {
-	"$schema": "https://biomejs.dev/schemas/2.3.12/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.7/schema.json",
 	"root": false,
-	"extends": ["@repo/biome-config/base", "@repo/biome-config/react-internal"]
+	"extends": ["@repo/biome-config/base", "@repo/biome-config/react-internal"],
+	"files": {
+		"includes": ["!**/*.css"]
+	},
+	"overrides": [
+		{
+			"includes": [
+				"src/components/breadcrumb.tsx",
+				"src/components/field.tsx",
+				"src/components/input-group.tsx",
+				"src/components/item.tsx"
+			],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off",
+						"useFocusableInteractive": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["src/components/input-group.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": { "useKeyWithClickEvents": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["src/components/label.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": { "noLabelWithoutControl": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["src/components/slider.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": { "noArrayIndexKey": "off" }
+				}
+			}
+		},
+		{
+			"includes": ["src/components/sidebar.tsx"],
+			"linter": {
+				"rules": {
+					"suspicious": { "noDocumentCookie": "off" }
+				}
+			}
+		}
+	]
 }
