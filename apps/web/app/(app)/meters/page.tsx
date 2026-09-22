@@ -151,7 +151,13 @@ export default async function MetersPage({
 											className="border-b border-border last:border-b-0"
 										>
 											<td className="max-w-0 px-3 py-2 align-top text-[11px]">
-												<div className="font-medium">{meter.name}</div>
+												<div className="font-medium">
+													{meter.active && !meter.removedAt ? (
+														meter.name
+													) : (
+														<s>{meter.name}</s>
+													)}
+												</div>
 												{meter.service && (
 													<div className="mt-0.5 text-[10px] text-muted-foreground">
 														{meter.service.name}
@@ -221,7 +227,7 @@ export default async function MetersPage({
 											: "bg-muted hover:bg-muted/80"
 									}`}
 								>
-									{m.name}
+									{m.active && !m.removedAt ? m.name : <s>{m.name}</s>}
 								</Link>
 							))}
 						</div>
