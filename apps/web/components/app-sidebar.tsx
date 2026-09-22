@@ -61,7 +61,6 @@ const data = {
 			title: "Dashboard",
 			url: "/",
 			icon: <LandmarkIcon />,
-			isActive: true,
 			items: [
 				{
 					title: "Overview",
@@ -81,10 +80,6 @@ const data = {
 				{
 					title: "Services & pricing",
 					url: "/services",
-				},
-				{
-					title: "Meters",
-					url: "/meters",
 				},
 			],
 		},
