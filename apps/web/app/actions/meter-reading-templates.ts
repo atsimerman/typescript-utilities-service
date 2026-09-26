@@ -50,10 +50,22 @@ export async function fetchMeterReadingTemplateWithLines(templateId: string) {
 		const meters = await db.query.meters.findMany();
 		const metersById = new Map(meters.map((m) => [m.id, m]));
 
-		const linesWithMeters = lines.map((line) => ({
-			...line,
-			meter: metersById.get(line.meterId) ?? null,
-		}));
+		const linesWithMeters = await Promise.all(
+			lines.map(async (line) => {
+				const lastReading = await db.query.meterReadings.findFirst({
+					where: (r, { eq }) => eq(r.meterId, line.meterId),
+					orderBy: (r, { desc }) => [desc(r.readingDate)],
+				});
+
+				return {
+					...line,
+					meter: metersById.get(line.meterId) ?? null,
+					lastReading: lastReading
+						? { value: lastReading.value, readingDate: lastReading.readingDate }
+						: null,
+				};
+			}),
+		);
 
 		return {
 			...template,

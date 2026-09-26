@@ -23,6 +23,7 @@ type TemplateRow = {
 	name: string;
 	unit: string;
 	previousValue: number;
+	previousDate: string | null;
 };
 
 export function AddReadingsFromTemplateButton({
@@ -126,7 +127,9 @@ function ApplyReadingsFromTemplateForm({
 				meterId: line.meterId,
 				name: line.meter?.name || "Unknown",
 				unit: line.meter?.unit || "",
-				previousValue: line.meter?.initialReading || 0,
+				previousValue:
+					line.lastReading?.value ?? line.meter?.initialReading ?? 0,
+				previousDate: line.lastReading?.readingDate ?? null,
 			}));
 			setRows(templateRows);
 		}
@@ -189,12 +192,22 @@ function ApplyReadingsFromTemplateForm({
 				{rows.map((row) => (
 					<div key={row.meterId} className="flex items-end gap-2">
 						<div className="flex-1">
-							<label htmlFor="value" className="text-xs font-medium block mb-1">
-								{row.name}
-								<span className="text-muted-foreground"> ({row.unit})</span>
-							</label>
+							<div className="flex items-baseline justify-between gap-2 mb-1">
+								<label
+									htmlFor={`value-${row.meterId}`}
+									className="text-xs font-medium"
+								>
+									{row.name}
+									<span className="text-muted-foreground"> ({row.unit})</span>
+								</label>
+								<span className="text-xs text-muted-foreground">
+									{row.previousDate
+										? `Current: ${row.previousValue} ${row.unit} (${row.previousDate})`
+										: `Initial: ${row.previousValue} ${row.unit}`}
+								</span>
+							</div>
 							<input
-								id="value"
+								id={`value-${row.meterId}`}
 								type="number"
 								value={values.get(row.meterId) || ""}
 								onChange={(e) => {
@@ -205,7 +218,7 @@ function ApplyReadingsFromTemplateForm({
 								min={row.previousValue}
 								required
 								className="w-full h-8 rounded border border-input bg-background px-2 py-1 text-sm"
-								placeholder={`Min: ${row.previousValue}`}
+								placeholder={String(row.previousValue)}
 							/>
 						</div>
 					</div>
