@@ -1,26 +1,10 @@
 "use server";
 
+import { formatDateTime, formatMonth } from "@/lib/format-date";
 import { formatMinorAmount } from "@/lib/format-money";
 import { applyFilters, type LedgerFilters } from "@/lib/ledger-filters";
 import { normalizePeriodFirstDay } from "@/lib/ledger-period";
 import { fetchAddressCurrency, fetchLedgerEntries } from "./ledger-entries";
-
-function formatPeriodLabel(period: Date | string): string {
-	const key =
-		typeof period === "string"
-			? period.slice(0, 10)
-			: period.toISOString().slice(0, 10);
-	const parts = key.split("-");
-	const y = Number(parts[0]);
-	const m = Number(parts[1]);
-	if (!Number.isFinite(y) || !Number.isFinite(m) || m < 1 || m > 12) {
-		return key;
-	}
-	return new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en", {
-		month: "long",
-		year: "numeric",
-	});
-}
 
 export async function generateLedgerReceipt({
 	addressId,
@@ -54,7 +38,7 @@ export async function generateLedgerReceipt({
 
 		const labelParts: string[] = [];
 		if (normalizedPeriod) {
-			labelParts.push(formatPeriodLabel(normalizedPeriod));
+			labelParts.push(formatMonth(normalizedPeriod, currency.locale));
 		}
 		if (filters.type) {
 			labelParts.push(
@@ -69,7 +53,7 @@ export async function generateLedgerReceipt({
 			lines.push("--- Ledger Receipt ---");
 			lines.push("");
 			lines.push(`Filter:    ${filtersLabel}`);
-			lines.push(`Generated: ${new Date().toLocaleString()}`);
+			lines.push(`Generated: ${formatDateTime(new Date(), currency.locale)}`);
 			lines.push("");
 			lines.push("No entries match the current filters.");
 			return { success: true, receipt: lines.join("\n") };
@@ -97,7 +81,7 @@ export async function generateLedgerReceipt({
 		lines.push("--- Ledger Receipt ---");
 		lines.push("");
 		lines.push(`Filter:    ${filtersLabel}`);
-		lines.push(`Generated: ${new Date().toLocaleString()}`);
+		lines.push(`Generated: ${formatDateTime(new Date(), currency.locale)}`);
 		lines.push("");
 
 		// Add line items (sorted by service name for consistency)

@@ -35,17 +35,27 @@ export async function fetchAddressCurrency(addressId: string) {
 		});
 		if (!address) return null;
 
-		const currency = await db.query.currencies.findFirst({
-			where: (c, { eq }) => eq(c.id, address.currencyId),
-		});
+		const [currency, country] = await Promise.all([
+			db.query.currencies.findFirst({
+				where: (c, { eq }) => eq(c.id, address.currencyId),
+			}),
+			db.query.countries.findFirst({
+				where: (c, { eq }) => eq(c.id, address.countryId),
+			}),
+		]);
+		const locale = country?.locale ?? null;
 		if (!currency) {
 			return {
+				locale,
+				code: null,
 				symbol: "",
 				minorUnit: 2,
 			};
 		}
 
 		return {
+			locale,
+			code: currency.code,
 			symbol: currency.symbol,
 			minorUnit: currency.minorUnit,
 		};

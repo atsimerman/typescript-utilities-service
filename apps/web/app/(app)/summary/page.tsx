@@ -8,13 +8,13 @@ import {
 } from "@/app/actions/ledger-entries";
 import { fetchMeterReadings } from "@/app/actions/meter-readings";
 import { fetchMeters } from "@/app/actions/meters";
-import { formatMinorAmount } from "@/lib/format-money";
+import { formatMonth } from "@/lib/format-date";
+import { formatMinorAmount, type MoneyFormat } from "@/lib/format-money";
 import {
 	balanceAtEndOf,
 	type ChargeCategory,
 	currentMonth,
 	entriesBilledIn,
-	formatMonthLabel,
 	meterConsumption,
 	monthlyTrend,
 	parseMonth,
@@ -96,8 +96,9 @@ export default async function SummaryPage({
 		fetchLedgerEntries(activeAddress.id),
 		fetchMeters(activeAddress.id),
 	]);
-	const money = currency ?? { symbol: "", minorUnit: 2 };
+	const money: MoneyFormat = currency ?? { symbol: "", minorUnit: 2 };
 	const fmt = (minor: number) => formatMinorAmount(minor, money);
+	const formatMonthLabel = (m: string) => formatMonth(m, money.locale);
 
 	const metersWithReadings = await Promise.all(
 		meters.map(async (m) => ({

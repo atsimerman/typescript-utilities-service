@@ -87,15 +87,6 @@ export function shiftMonth(month: string, delta: number): string {
 	return d.toISOString().slice(0, 7);
 }
 
-export function formatMonthLabel(month: string): string {
-	const [y, m] = month.split("-").map(Number);
-	return new Date(Date.UTC(y ?? 1970, (m ?? 1) - 1, 1)).toLocaleString("en", {
-		month: "long",
-		year: "numeric",
-		timeZone: "UTC",
-	});
-}
-
 function monthKey(period: Date | string): string {
 	return ledgerEntryPeriodKey(period).slice(0, 7);
 }
