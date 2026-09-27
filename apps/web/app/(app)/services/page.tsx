@@ -1,8 +1,10 @@
 import { fetchAddressServiceConfigs } from "@/app/actions/address-service-configs";
 import { fetchAddresses } from "@/app/actions/addresses";
+import { fetchAddressCurrency } from "@/app/actions/ledger-entries";
 import { fetchServices } from "@/app/actions/services";
 import { AddServiceDialog } from "@/components/add-service-dialog";
 import { AttachServiceDialog } from "@/components/attach-service-dialog";
+import { formatMinorAmount, type MoneyFormat } from "@/lib/format-money";
 
 function formatDate(date: Date | string | null) {
 	if (!date) return "—";
@@ -10,9 +12,9 @@ function formatDate(date: Date | string | null) {
 	return d.toISOString().slice(0, 10);
 }
 
-function formatMoney(minor: number | null | undefined) {
+function formatMoney(minor: number | null | undefined, money: MoneyFormat) {
 	if (minor == null) return "—";
-	return (minor / 100).toFixed(2);
+	return formatMinorAmount(minor, money);
 }
 
 function getConfigStatus(config: {
@@ -44,9 +46,13 @@ export default async function ServicesPage() {
 
 	const activeAddress = addresses.at(0) ?? null;
 
-	const configs = activeAddress
-		? await fetchAddressServiceConfigs(activeAddress.id)
-		: [];
+	const [configs, currency] = activeAddress
+		? await Promise.all([
+				fetchAddressServiceConfigs(activeAddress.id),
+				fetchAddressCurrency(activeAddress.id),
+			])
+		: [[], null];
+	const money = currency ?? { symbol: "", minorUnit: 2 };
 
 	const groupServices = services.filter((service) => service.type === "group");
 	const attachedServiceIds = [...new Set(configs.map((c) => c.serviceId))];
@@ -250,10 +256,10 @@ export default async function ServicesPage() {
 												{formatDate(config.activeTo)}
 											</td>
 											<td className="px-3 py-2 align-middle text-right text-[11px]">
-												<div>{formatMoney(config.fixedPrice)}</div>
+												<div>{formatMoney(config.fixedPrice, money)}</div>
 												<div className="text-[10px] text-muted-foreground">
 													{config.pricePerUnit != null
-														? `${formatMoney(config.pricePerUnit)} / unit`
+														? `${formatMoney(config.pricePerUnit, money)} / unit`
 														: "—"}
 												</div>
 											</td>

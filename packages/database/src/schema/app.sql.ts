@@ -28,6 +28,7 @@ export const countries = pgTable("countries", {
 	id: uuid("id").default(sql`gen_random_uuid()`).primaryKey(),
 	name: text("name").notNull(),
 	iso: text("iso").notNull().unique(),
+	locale: text("locale").notNull().default("uk-UA"), // BCP 47, for Intl formatting
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

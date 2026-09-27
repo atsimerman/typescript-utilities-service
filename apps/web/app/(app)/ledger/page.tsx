@@ -6,42 +6,25 @@ import {
 } from "@/app/actions/ledger-entries";
 import { fetchServices } from "@/app/actions/services";
 import { LedgerToolbar } from "@/components/ledger-toolbar";
-import { formatMinorAmount } from "@/lib/format-money";
+import { formatMonth } from "@/lib/format-date";
+import { formatMinorAmount, type MoneyFormat } from "@/lib/format-money";
 import {
 	applyFilters,
 	isFiltered,
 	parseLedgerFilters,
 } from "@/lib/ledger-filters";
 
-function formatPeriodLabel(period: Date | string): string {
-	const key =
-		typeof period === "string"
-			? period.slice(0, 10)
-			: period.toISOString().slice(0, 10);
-	const parts = key.split("-");
-	const y = Number(parts[0]);
-	const m = Number(parts[1]);
-	if (!Number.isFinite(y) || !Number.isFinite(m) || m < 1 || m > 12) {
-		return key;
-	}
-	return new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en", {
-		month: "short",
-		year: "numeric",
-	});
-}
-
-function recentMonthOptions(count: number): { value: string; label: string }[] {
+function recentMonthOptions(
+	count: number,
+	locale: string | null | undefined,
+): { value: string; label: string }[] {
 	const out: { value: string; label: string }[] = [];
 	const d = new Date();
 	for (let i = 0; i < count; i++) {
 		const y = d.getFullYear();
 		const m = d.getMonth() + 1;
 		const value = `${y}-${String(m).padStart(2, "0")}`;
-		const label = new Date(Date.UTC(y, m - 1, 1)).toLocaleString("en", {
-			month: "short",
-			year: "numeric",
-		});
-		out.push({ value, label });
+		out.push({ value, label: formatMonth(value, locale, "short") });
 		d.setMonth(d.getMonth() - 1);
 	}
 	return out;
@@ -59,7 +42,7 @@ export default async function LedgerPage({
 	]);
 
 	const activeAddress = addresses.at(0) ?? null;
-	const currency = activeAddress
+	const currency: MoneyFormat = activeAddress
 		? ((await fetchAddressCurrency(activeAddress.id)) ?? {
 				symbol: "",
 				minorUnit: 2,
@@ -84,7 +67,7 @@ export default async function LedgerPage({
 		: 0;
 	const filteredNet = displayed.reduce((acc, e) => acc + e.amount, 0);
 	const billableServices = services.filter((s) => s.type !== "group");
-	const monthOptions = recentMonthOptions(24);
+	const monthOptions = recentMonthOptions(24, currency.locale);
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
@@ -199,7 +182,7 @@ export default async function LedgerPage({
 											className="border-b border-border last:border-b-0"
 										>
 											<td className="whitespace-nowrap px-3 py-2 text-[11px]">
-												{formatPeriodLabel(row.period)}
+												{formatMonth(row.period, currency.locale, "short")}
 											</td>
 											<td className="px-3 py-2 align-middle">
 												<span className="inline-flex rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium capitalize">
