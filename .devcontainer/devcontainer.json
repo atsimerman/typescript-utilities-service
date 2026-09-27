@@ -6,6 +6,13 @@
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {}
 	},
+	"forwardPorts": [4983],
+	"portsAttributes": {
+		"4983": {
+			"label": "Drizzle Studio",
+			"onAutoForward": "silent"
+		}
+	},
 	"postCreateCommand": "pnpm install",
 	"waitFor": "postCreateCommand",
 	"customizations": {
