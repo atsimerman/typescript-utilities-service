@@ -1,0 +1,40 @@
+{
+	"features": [
+		{
+			"id": "feat-001",
+			"name": "Green baseline",
+			"description": "./init.sh passes on a clean checkout (fast mode) and ./init.sh --full passes (adds next build).",
+			"scope": "root only (init.sh, harness files)",
+			"dependencies": [],
+			"status": "done",
+			"evidence": "2026-10-08 in devcontainer, cold (TURBO_FORCE): ./init.sh ok ~10s; ./init.sh --full ok ~30s"
+		},
+		{
+			"id": "feat-002",
+			"name": "Vitest + unit tests for pure lib helpers",
+			"description": "Add Vitest to apps/web (devDependency, `test` script, `@/` alias in a vitest config) and unit tests for lib/format-money.ts, lib/format-date.ts and lib/monthly-summary.ts (statementTotals, shiftMonth, monthlyTrend). Wire `pnpm --filter web test` into init.sh and the CLAUDE.md invariants, and add a `test` task to turbo.json if it is run from the root. Approved by user to edit apps/web/package.json and turbo.json for this task.",
+			"scope": "apps/web (package.json, vitest config, lib/*.test.ts), turbo.json, init.sh, CLAUDE.md",
+			"dependencies": ["feat-001"],
+			"status": "not-started",
+			"evidence": ""
+		},
+		{
+			"id": "feat-003",
+			"name": "Overview page: totals",
+			"description": "Replace the static placeholder cards in apps/web/app/(app)/page.tsx with stat cards for the active address (same address selection as summary/page.tsx): current balance (debt/overpayment/settled), total charged and total paid for the current month, and all-time total paid. Reuse statementTotals, balanceAtEndOf and currentMonth from lib/monthly-summary.ts and formatMinorAmount from lib/format-money.ts; reuse fetch actions, no new DB queries or schema changes. Show an empty state when there is no address. Charts are feat-004. Add unit tests for any new pure helper (Vitest from feat-002). Active address = first of fetchAddresses(), confirmed by user.",
+			"scope": "apps/web/app/(app)/page.tsx, apps/web/components/ (new overview components)",
+			"dependencies": ["feat-002"],
+			"status": "not-started",
+			"evidence": ""
+		},
+		{
+			"id": "feat-004",
+			"name": "Overview page: charts (recharts via shadcn)",
+			"description": "Add to the Overview: (a) stacked bar chart of rent / utilities / other charges for the last 6 months, built from monthlyTrend(); (b) line or area chart of closingBalance over the same months. User approved recharts via the shadcn chart component (add with the shadcn CLI into packages/ui, following packages/ui/components.json; edits to packages/ui and apps/web package.json plus pnpm-lock.yaml are in scope). Use theme tokens so it works in light and dark. Run ./init.sh --full since dependencies change.",
+			"scope": "packages/ui (chart component, package.json, lockfile), apps/web/components/ (chart components), apps/web/app/(app)/page.tsx",
+			"dependencies": ["feat-003"],
+			"status": "not-started",
+			"evidence": ""
+		}
+	]
+}
