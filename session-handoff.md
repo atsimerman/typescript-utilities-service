@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Start feat-008 (sync shadcn components), then feat-009 (@better-auth-ui to 1.7.x), each on a branch from feature/better-auth-upgrade. see feature_list.json for scope.
+- feat-008 is on branch feature/shadcn-sync, pending the user's visual check; then merge it into feature/better-auth-upgrade and start feat-009 (@better-auth-ui to 1.7.x). see feature_list.json for scope.

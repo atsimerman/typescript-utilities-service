@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-007 done; next: feat-008 shadcn sync, then feat-009)
+**Active Feature:** feat-008 shadcn sync (on feature/shadcn-sync, awaiting user visual check; then merge into feature/better-auth-upgrade, then feat-009)
 
 ## Status
 
