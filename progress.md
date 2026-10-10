@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** feat-008 shadcn sync (on feature/shadcn-sync, awaiting user visual check; then merge into feature/better-auth-upgrade, then feat-009)
+**Active Feature:** none (feat-008 done; next: feat-009)
 
 ## Status
 
@@ -19,6 +19,7 @@
 - [x] feat-005 replaced the balance chart with Utilities by service (line chart for the 4 most expensive services, rent excluded; `utilitiesSeries()` in lib/overview.ts)
 - [x] feat-006 (done; user verified local sign-in): better-auth family at 1.7.7, UI lib kept at 1.6.43; see feature_list.json evidence
 - [x] feat-007 vendored UI code (packages/ui/src/{components,lib,hooks}) excluded from Biome
+- [x] feat-008 shadcn components synced from the registry (named list, not --all); user verified visually
 
 ### What's Next
 
