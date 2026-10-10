@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- All features done. PR feature/better-auth-upgrade -> main is open; after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.
+- All features done. open the PR feature/better-auth-upgrade -> main on GitHub (no gh CLI here); after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.

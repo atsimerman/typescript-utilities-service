@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (all features done; single PR feature/better-auth-upgrade -> main opened)
+**Active Feature:** none (all features done; open the single PR feature/better-auth-upgrade -> main on GitHub; gh CLI is not installed)
 
 ## Status
 
