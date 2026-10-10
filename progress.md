@@ -22,7 +22,7 @@
 ### What's Next
 
 1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
-2. Then feat-007 (@better-auth-ui to 1.7.x, force-update approved)
+2. Then feat-007 (exclude vendored packages/ui code from Biome), then feat-008 (@better-auth-ui to 1.7.x, force-update approved)
 
 ## Blockers / Risks
 

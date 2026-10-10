@@ -56,10 +56,19 @@
 		},
 		{
 			"id": "feat-007",
-			"name": "Upgrade @better-auth-ui to 1.7.x",
-			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. Stop and report if the change turns out to be large.",
-			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
+			"name": "Exclude vendored UI code from Biome",
+			"description": "Stop Biome from linting and formatting vendored shadcn / better-auth-ui code so it can be updated from the registry without reformatting or rule fights. In packages/ui/biome.json exclude src/components, src/lib and src/hooks (today that is effectively all authored-by-others code in packages/ui/src; CSS is already excluded) and remove the five now-pointless per-file rule overrides. Remove the three `biome-ignore` comments added to packages/ui/src/components/chart.tsx. Keep tsc (`check-types`) coverage unchanged. Verify: `pnpm lint:ci` passes; a deliberately badly formatted/violating line in a vendored file (reverted afterwards) does not fail `lint:ci` and is not rewritten by `pnpm --filter @repo/ui lint`; apps/web and packages/auth are still linted (same check there fails). Document in CLAUDE.md invariants that packages/ui vendored code is not linted.",
+			"scope": "packages/ui/biome.json, packages/ui/src/components/chart.tsx (remove biome-ignore comments), CLAUDE.md",
 			"dependencies": ["feat-006"],
+			"status": "not-started",
+			"evidence": ""
+		},
+		{
+			"id": "feat-008",
+			"name": "Upgrade @better-auth-ui to 1.7.x",
+			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. Because feat-007 excludes vendored UI code from Biome, sync files from the registry as they are (no reformatting) so diffs stay minimal. Stop and report if the change turns out to be large.",
+			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
+			"dependencies": ["feat-007"],
 			"status": "not-started",
 			"evidence": ""
 		}
