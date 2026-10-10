@@ -33,8 +33,8 @@
 			"description": "Add to the Overview: (a) stacked bar chart of rent / utilities / other charges for the last 6 months, built from monthlyTrend(); (b) line or area chart of closingBalance over the same months. User approved recharts via the shadcn chart component (add with the shadcn CLI into packages/ui, following packages/ui/components.json; edits to packages/ui and apps/web package.json plus pnpm-lock.yaml are in scope). Use theme tokens so it works in light and dark. Run ./init.sh --full since dependencies change.",
 			"scope": "packages/ui (chart component, package.json, lockfile), apps/web/components/ (chart components), apps/web/app/(app)/page.tsx",
 			"dependencies": ["feat-003"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (28 tests incl. chartSeries; lint:ci, check-types, build:web ok). Charts not yet viewed in a browser (no DB in container): check light/dark and tooltips on /."
 		}
 	]
 }

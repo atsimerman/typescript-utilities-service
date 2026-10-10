@@ -1,6 +1,7 @@
 import {
 	balanceAtEndOf,
 	entriesBilledIn,
+	monthlyTrend,
 	statementTotals,
 } from "@/lib/monthly-summary";
 
@@ -43,4 +44,29 @@ export function overviewTotals(
 		paid: totals.payments,
 		paidAllTime,
 	};
+}
+
+export type ChartPoint = {
+	month: string; // YYYY-MM
+	rent: number;
+	utilities: number;
+	other: number;
+	closingBalance: number;
+};
+
+/** Last `count` billing months ending with `month`, oldest first, for charts. */
+export function chartSeries(
+	entries: OverviewEntry[],
+	month: string,
+	count: number,
+): ChartPoint[] {
+	return monthlyTrend(entries, month, count)
+		.map((r) => ({
+			month: r.month,
+			rent: r.rent,
+			utilities: r.utilities,
+			other: r.other,
+			closingBalance: r.closingBalance,
+		}))
+		.reverse();
 }

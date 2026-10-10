@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { balanceKind, overviewTotals } from "@/lib/overview";
+import { balanceKind, chartSeries, overviewTotals } from "@/lib/overview";
 
 type Entry = Parameters<typeof overviewTotals>[0][number];
 
@@ -79,5 +79,26 @@ describe("overviewTotals", () => {
 			paid: 0,
 			paidAllTime: 0,
 		});
+	});
+});
+
+describe("chartSeries", () => {
+	it("returns the last N months oldest first with category totals and balance", () => {
+		const series = chartSeries(
+			[
+				rent("2026-02-01", 100),
+				rent("2026-03-01", 100),
+				payment("2026-03-05", 50),
+			],
+			"2026-03",
+			3,
+		);
+		expect(series.map((p) => p.month)).toEqual([
+			"2026-01",
+			"2026-02",
+			"2026-03",
+		]);
+		expect(series.map((p) => p.rent)).toEqual([0, 100, 100]);
+		expect(series.map((p) => p.closingBalance)).toEqual([0, 100, 150]);
 	});
 });

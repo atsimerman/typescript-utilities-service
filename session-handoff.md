@@ -2,8 +2,8 @@
 
 ## Current Objective
 
-- Goal: harness setup finished; feat-002 and feat-003 done; next is feat-004 charts
-- Current status: baseline green; branch feature/overview-totals (stacked on feature/vitest-lib-tests, not yet merged)
+- Goal: harness setup finished; feat-001..004 done; feature list needs new tasks
+- Current status: baseline green; branch feature/overview-charts (stacked on feature/overview-totals, not yet merged)
 - Branch / commit: feature/ai-agents-harness, harness files still uncommitted
 
 ## Verification Evidence
@@ -12,12 +12,12 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
-| Tests | `pnpm test` | 27 passed | apps/web/lib |
+| Tests | `pnpm test` | 28 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks
 
-- feat-004 adds recharts (approved); needs ./init.sh --full
+- Charts unverified visually
 - Run inside the devcontainer, not on the host
 
 ## Next Session Startup
@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Implement feat-004 only; see feature_list.json for scope.
+- Choose the next feature with the user; add it to feature_list.json first. see feature_list.json for scope.
