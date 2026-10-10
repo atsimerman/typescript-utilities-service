@@ -24,7 +24,7 @@
 ### What's Next
 
 1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
-2. Then feat-008 (sync shadcn components, named list not --all), then feat-009 (@better-auth-ui to 1.7.x, force-update approved); then one PR feature/better-auth-upgrade -> main
+2. After feat-009 is confirmed and merged: feat-010 Settings page (sidebar /settings is a 404 today; decide which settings cards to hide first); then one PR feature/better-auth-upgrade -> main
 
 ## Blockers / Risks
 
