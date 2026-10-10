@@ -4,6 +4,7 @@ import { formatDateTime, formatMonth } from "@/lib/format-date";
 import { formatMinorAmount } from "@/lib/format-money";
 import { applyFilters, type LedgerFilters } from "@/lib/ledger-filters";
 import { normalizePeriodFirstDay } from "@/lib/ledger-period";
+import { buildTenantMessage } from "@/lib/tenant-message";
 import { fetchAddressCurrency, fetchLedgerEntries } from "./ledger-entries";
 
 export async function generateLedgerReceipt({
@@ -32,6 +33,18 @@ export async function generateLedgerReceipt({
 
 		if (filters.period && !normalizedPeriod) {
 			return { success: false, error: "Invalid period format" };
+		}
+
+		// A month without a type filter is the monthly message for the tenant.
+		if (normalizedPeriod && !filters.type) {
+			return {
+				success: true,
+				receipt: buildTenantMessage({
+					entries,
+					month: normalizedPeriod.slice(0, 7),
+					money: currency,
+				}),
+			};
 		}
 
 		const filtered = applyFilters(entries, filters);

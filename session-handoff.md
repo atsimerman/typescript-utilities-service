@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Merge feature/dependabot, enable Dependabot version updates in GitHub settings and check the first run. Then feat-012 (tenant message) on a new feature/ branch. see feature_list.json for scope.
+- Check Generate receipt with a month selected in the browser (feat-012, branch feature/tenant-message, stacked on feature/dependabot). Then feat-013..015. see feature_list.json for scope.

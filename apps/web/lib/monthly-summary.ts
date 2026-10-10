@@ -91,6 +91,11 @@ function monthKey(period: Date | string): string {
 	return ledgerEntryPeriodKey(period).slice(0, 7);
 }
 
+/** Month (YYYY-MM) recorded on the ledger entry (the month it covers). */
+export function ledgerMonthOf(entry: SummaryLedgerEntry): string {
+	return monthKey(entry.period);
+}
+
 export const RENT_SERVICE_SLUG = "rent";
 
 export function chargeCategory(entry: SummaryLedgerEntry): ChargeCategory {

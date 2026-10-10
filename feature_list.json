@@ -105,8 +105,8 @@
 			"description": "Generate receipt produces the monthly tenant message in the address locale (uk -> Ukrainian, otherwise English). Layout: heading `payments for <month> <year>` (month name and year only), blank line, one `<service>: <amount>` line per utility service of the ledger period (rent excluded, alphabetical), blank line, a total line (sum of the lines), then an overpayment line (whole-ledger balance up to the end of the billing month, balanceAtEndOf) or a debt line when the balance is a debt; nothing when settled. The Ukrainian labels follow the user's existing message template (heading, total, overpayment, debt); the English ones are new. Amounts via formatMinorAmount. Text building is a pure function in lib/tenant-message.ts with Vitest tests (uk + en, overpayment, debt, settled, no entries); the server action only fetches and calls it. Without a period filter keep the existing generic receipt.",
 			"scope": "apps/web/lib/tenant-message.ts (+test), apps/web/app/actions/ledger-receipt.ts, apps/web/components/ledger-receipt-button.tsx",
 			"dependencies": ["feat-011"],
-			"status": "todo",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (38 tests, 5 new in lib/tenant-message.test.ts: uk debt, en overpayment with rent excluded and alphabetical order, settled, no charges, non-uk locale falls back to English). New lib/tenant-message.ts (buildTenantMessage) and ledgerMonthOf in monthly-summary.ts; generateLedgerReceipt uses it when a month is selected without a type filter, otherwise the generic receipt is unchanged. Not yet checked in the browser against real data."
 		},
 		{
 			"id": "feat-013",
