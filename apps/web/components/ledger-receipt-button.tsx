@@ -84,9 +84,9 @@ export function LedgerReceiptButton({
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="max-w-md">
 					<DialogHeader>
-						<DialogTitle>Charges &amp; Payments Receipt</DialogTitle>
+						<DialogTitle>Receipt message</DialogTitle>
 						<DialogDescription>
-							Share this receipt via messenger apps
+							Copy the text and send it via a messenger
 						</DialogDescription>
 					</DialogHeader>
 
