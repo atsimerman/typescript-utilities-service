@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Start feat-007 (exclude vendored UI code from Biome), then feat-008 (@better-auth-ui to 1.7.x). see feature_list.json for scope.
+- Start feat-008 (@better-auth-ui to 1.7.x) on a branch from feature/better-auth-upgrade. see feature_list.json for scope.

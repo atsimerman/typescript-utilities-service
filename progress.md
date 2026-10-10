@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-006 done; next: feat-007)
+**Active Feature:** none (feat-007 done; next: feat-008)
 
 ## Status
 
@@ -18,11 +18,12 @@
 - [x] feat-004 Overview charts: shadcn `chart.tsx` in packages/ui (+recharts 3.8.0 in ui and web), `components/overview-charts.tsx` (stacked charges bar + balance area, 6 months), `chartSeries()` in lib/overview.ts
 - [x] feat-005 replaced the balance chart with Utilities by service (line chart for the 4 most expensive services, rent excluded; `utilitiesSeries()` in lib/overview.ts)
 - [x] feat-006 (done; user verified local sign-in): better-auth family at 1.7.7, UI lib kept at 1.6.43; see feature_list.json evidence
+- [x] feat-007 vendored UI code (packages/ui/src/{components,lib,hooks}) excluded from Biome
 
 ### What's Next
 
 1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
-2. Then feat-007 (exclude vendored packages/ui code from Biome), then feat-008 (@better-auth-ui to 1.7.x, force-update approved)
+2. Then feat-008 (@better-auth-ui to 1.7.x, force-update approved); then one PR feature/better-auth-upgrade -> main
 
 ## Blockers / Risks
 
