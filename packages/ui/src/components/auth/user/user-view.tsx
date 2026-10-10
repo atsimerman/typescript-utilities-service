@@ -1,29 +1,27 @@
-"use client";
+"use client"
 
-import {
-	type UsernameAuthClient,
-	useAuth,
-	useSession,
-} from "@better-auth-ui/react";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { cn } from "@repo/ui/lib/utils";
-import type { User } from "better-auth";
-import { UserAvatar } from "./user-avatar";
+import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username"
+import { useAuth, useSession } from "@better-auth-ui/react"
+import type { User } from "better-auth"
+
+import { Skeleton } from "@repo/ui/components/skeleton"
+import { cn } from "cn"
+import { UserAvatar } from "./user-avatar"
 
 export type UserViewProps = {
-	className?: string;
-	isPending?: boolean;
-	/**
-	 * When true, the subtitle line (email when name/username is shown) is hidden.
-	 * @default false
-	 */
-	hideSubtitle?: boolean;
-	/** @remarks `User` */
-	user?: Partial<User> & {
-		username?: string | null;
-		displayUsername?: string | null;
-	};
-};
+  className?: string
+  isPending?: boolean
+  /**
+   * When true, the subtitle line (email when name/username is shown) is hidden.
+   * @default false
+   */
+  hideSubtitle?: boolean
+  /** @remarks `User` */
+  user?: Partial<User> & {
+    username?: string | null
+    displayUsername?: string | null
+  }
+}
 
 /**
  * Render a compact user item with an avatar, a primary label (display username, name, or email), and an optional subtitle (email).
@@ -35,51 +33,50 @@ export type UserViewProps = {
  * @returns A React element showing the user's avatar with their identifying information
  */
 export function UserView({
-	className,
-	isPending,
-	hideSubtitle = false,
-	user,
+  className,
+  isPending,
+  hideSubtitle = false,
+  user
 }: UserViewProps) {
-	const { authClient } = useAuth();
-	const { data: session, isPending: sessionPending } = useSession(
-		authClient as UsernameAuthClient,
-		{ enabled: !user && !isPending },
-	);
+  const { authClient } = useAuth<UsernameAuthClient>()
+  const { data: session, isPending: sessionPending } = useSession(authClient, {
+    enabled: !user && !isPending
+  })
 
-	const resolvedUser: UserViewProps["user"] = user ?? session?.user;
+  const resolvedUser = user ?? session?.user
 
-	if ((isPending || sessionPending) && !user) {
-		return (
-			<div className={cn("flex items-center gap-2 min-w-0", className)}>
-				<UserAvatar isPending />
+  if ((isPending || sessionPending) && !user) {
+    return (
+      <div className={cn("flex items-center gap-2 min-w-0", className)}>
+        <UserAvatar isPending />
 
-				<div className="grid flex-1 gap-1 text-left text-sm">
-					<Skeleton className="h-4 w-24" />
+        <div className="grid flex-1 gap-1 text-left text-sm">
+          <Skeleton className="h-4 w-24" />
 
-					{!hideSubtitle && <Skeleton className="h-3 w-32" />}
-				</div>
-			</div>
-		);
-	}
+          {!hideSubtitle && <Skeleton className="h-3 w-32" />}
+        </div>
+      </div>
+    )
+  }
 
-	return (
-		<div className={cn("flex items-center gap-2 min-w-0", className)}>
-			<UserAvatar user={resolvedUser as User | undefined} />
+  return (
+    <div className={cn("flex items-center gap-2 min-w-0", className)}>
+      <UserAvatar user={resolvedUser as User | undefined} />
 
-			<div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-				<span className="truncate font-medium text-foreground">
-					{resolvedUser?.displayUsername ||
-						resolvedUser?.name ||
-						resolvedUser?.email}
-				</span>
+      <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
+        <span className="truncate font-medium text-foreground">
+          {resolvedUser?.displayUsername ||
+            resolvedUser?.name ||
+            resolvedUser?.email}
+        </span>
 
-				{!hideSubtitle &&
-					(resolvedUser?.displayUsername || resolvedUser?.name) && (
-						<span className="text-muted-foreground truncate text-xs">
-							{resolvedUser?.email}
-						</span>
-					)}
-			</div>
-		</div>
-	);
+        {!hideSubtitle &&
+          (resolvedUser?.displayUsername || resolvedUser?.name) && (
+            <span className="text-muted-foreground truncate text-xs">
+              {resolvedUser?.email}
+            </span>
+          )}
+      </div>
+    </div>
+  )
 }

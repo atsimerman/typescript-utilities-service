@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-008 done; next: feat-009)
+**Active Feature:** feat-009 @better-auth-ui 1.7 (on feature/better-auth-ui-1-7, awaiting user visual check; then merge into feature/better-auth-upgrade and open the single PR to main)
 
 ## Status
 

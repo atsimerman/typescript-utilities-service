@@ -1,78 +1,91 @@
-"use client";
+"use client"
 
 import {
-	type AdditionalField as AdditionalFieldConfig,
-	resolveInputType,
-} from "@better-auth-ui/core";
-import { useAuth } from "@better-auth-ui/react";
-import { buttonVariants } from "@repo/ui/components/button";
-import { Calendar } from "@repo/ui/components/calendar";
-import { Checkbox } from "@repo/ui/components/checkbox";
+  type AdditionalField as AdditionalFieldConfig,
+  type AdditionalFieldFormValue,
+  getFormFieldErrors,
+  resolveInputType
+} from "@better-auth-ui/core"
+import { useAuth, useCopyToClipboard } from "@better-auth-ui/react"
+import { format } from "date-fns"
+import { CalendarIcon, Check, ChevronDownIcon, Copy } from "lucide-react"
+import { type ComponentType, useRef, useState } from "react"
+import { toast } from "sonner"
+
+import { buttonVariants } from "@repo/ui/components/button"
+import { Calendar } from "@repo/ui/components/calendar"
+import { Checkbox } from "@repo/ui/components/checkbox"
 import {
-	Combobox,
-	ComboboxContent,
-	ComboboxEmpty,
-	ComboboxInput,
-	ComboboxItem,
-	ComboboxList,
-} from "@repo/ui/components/combobox";
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList
+} from "@repo/ui/components/combobox"
 import {
-	Field,
-	FieldContent,
-	FieldError,
-	FieldLabel,
-} from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
+  Field,
+  FieldContent,
+  FieldError,
+  FieldLabel
+} from "@repo/ui/components/field"
+import { Input } from "@repo/ui/components/input"
 import {
-	InputGroup,
-	InputGroupAddon,
-	InputGroupButton,
-	InputGroupInput,
-} from "@repo/ui/components/input-group";
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput
+} from "@repo/ui/components/input-group"
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@repo/ui/components/popover";
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@repo/ui/components/popover"
 import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@repo/ui/components/select";
-import { Slider } from "@repo/ui/components/slider";
-import { Switch } from "@repo/ui/components/switch";
-import { Textarea } from "@repo/ui/components/textarea";
-import { cn } from "@repo/ui/lib/utils";
-import { format } from "date-fns";
-import { CalendarIcon, Check, ChevronDownIcon, Copy } from "lucide-react";
-import { type ComponentType, useRef, useState } from "react";
-import { toast } from "sonner";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@repo/ui/components/select"
+import { Slider } from "@repo/ui/components/slider"
+import { Switch } from "@repo/ui/components/switch"
+import { Textarea } from "@repo/ui/components/textarea"
+import { cn } from "cn"
 
 export type AdditionalFieldProps = {
-	name: string;
-	field: AdditionalFieldConfig;
-	isPending?: boolean;
-	/** Complete suffix appended to labels for fields that are not required. */
-	optionalLabel?: string;
-};
+  name: string
+  field: AdditionalFieldConfig
+  value: AdditionalFieldFormValue
+  onBlur: () => void
+  onChange: (value: AdditionalFieldFormValue) => void
+  isInvalid?: boolean
+  errors?: unknown[]
+  isPending?: boolean
+  /** Complete suffix appended to labels for fields that are not required. */
+  optionalLabel?: string
+}
+
+function valueToString(value: AdditionalFieldFormValue) {
+  if (value == null) return ""
+  return value instanceof Date ? value.toISOString() : String(value)
+}
 
 /** Convert a `defaultValue` into a `Date` for the calendar. */
 function toDate(value: unknown): Date | undefined {
-	if (value instanceof Date) return value;
-	if (typeof value === "string") {
-		const parsed = new Date(value);
-		return Number.isNaN(parsed.getTime()) ? undefined : parsed;
-	}
-	return undefined;
+  if (value instanceof Date) return value
+  if (typeof value === "string") {
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? undefined : parsed
+  }
+  return undefined
 }
 
 /** Format a Date as `HH:mm:ss` for an `<input type="time">`. */
 function formatTime(date: Date) {
-	const pad = (n: number) => n.toString().padStart(2, "0");
-	return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  const pad = (n: number) => n.toString().padStart(2, "0")
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 
 /**
@@ -81,356 +94,423 @@ function formatTime(date: Date) {
  * stale snapshot — important when paired with editable inputs.
  */
 function CopyButton({
-	getValue,
-	isDisabled,
+  getValue,
+  isDisabled
 }: {
-	getValue: () => string | undefined;
-	isDisabled?: boolean;
+  getValue: () => string | undefined
+  isDisabled?: boolean
 }) {
-	const { localization } = useAuth();
-	const [copied, setCopied] = useState(false);
+  const { localization } = useAuth()
+  const { copied, copy } = useCopyToClipboard({
+    onError: (error) => {
+      console.error("[Better Auth UI] Copy failed", error)
+      toast.error(localization.errors.copyFailed)
+    }
+  })
 
-	async function handleCopy() {
-		const value = getValue();
-		if (!value) return;
+  async function handleCopy() {
+    const value = getValue()
+    if (!value) return
 
-		try {
-			await navigator.clipboard.writeText(value);
-			setCopied(true);
-			setTimeout(() => setCopied(false), 1500);
-		} catch (error) {
-			toast.error(error instanceof Error ? error.message : String(error));
-		}
-	}
+    await copy(value)
+  }
 
-	return (
-		<InputGroupButton
-			aria-label={localization.settings.copyToClipboard}
-			title={localization.settings.copyToClipboard}
-			onClick={handleCopy}
-			disabled={isDisabled}
-		>
-			{copied ? <Check /> : <Copy />}
-		</InputGroupButton>
-	);
+  return (
+    <InputGroupButton
+      aria-label={
+        copied
+          ? localization.settings.copiedToClipboard
+          : localization.settings.copyToClipboard
+      }
+      title={
+        copied
+          ? localization.settings.copiedToClipboard
+          : localization.settings.copyToClipboard
+      }
+      onClick={handleCopy}
+      disabled={isDisabled}
+    >
+      {copied ? <Check /> : <Copy />}
+    </InputGroupButton>
+  )
 }
 
 /** Renders a single additional user field via shadcn primitives. */
 export function AdditionalField({
-	name,
-	field: configuredField,
-	isPending,
-	optionalLabel,
+  name,
+  field: configuredField,
+  value,
+  onBlur,
+  onChange,
+  isInvalid,
+  errors,
+  isPending,
+  optionalLabel
 }: AdditionalFieldProps) {
-	const field =
-		optionalLabel && !configuredField.required
-			? {
-					...configuredField,
-					label: (
-						<>
-							{configuredField.label}
-							{optionalLabel}
-						</>
-					),
-				}
-			: configuredField;
-	const inputType = resolveInputType(field);
+  const field =
+    optionalLabel && !configuredField.required
+      ? {
+          ...configuredField,
+          label: (
+            <>
+              {configuredField.label}
+              {optionalLabel}
+            </>
+          )
+        }
+      : configuredField
+  const inputType = resolveInputType(field)
+  const fieldErrors = getFormFieldErrors(errors ?? [])
 
-	if (field.render) {
-		const FieldRenderer = field.render as ComponentType<AdditionalFieldProps>;
-		return (
-			<FieldRenderer
-				name={name}
-				field={field}
-				isPending={isPending}
-				optionalLabel={optionalLabel}
-			/>
-		);
-	}
+  if (field.render) {
+    const FieldRenderer = field.render as ComponentType<AdditionalFieldProps>
+    return (
+      <FieldRenderer
+        name={name}
+        field={field}
+        value={value}
+        onBlur={onBlur}
+        onChange={onChange}
+        isInvalid={isInvalid}
+        errors={errors}
+        isPending={isPending}
+        optionalLabel={optionalLabel}
+      />
+    )
+  }
 
-	if (inputType === "hidden") {
-		return (
-			<input
-				type="hidden"
-				name={name}
-				value={
-					field.defaultValue == null
-						? ""
-						: field.defaultValue instanceof Date
-							? field.defaultValue.toISOString()
-							: String(field.defaultValue)
-				}
-			/>
-		);
-	}
+  if (inputType === "hidden") {
+    return (
+      <input type="hidden" name={name} value={valueToString(value)} readOnly />
+    )
+  }
 
-	if (inputType === "textarea") {
-		return (
-			<Field>
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+  if (inputType === "textarea") {
+    return (
+      <Field data-invalid={isInvalid}>
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-				<Textarea
-					id={name}
-					name={name}
-					defaultValue={
-						field.defaultValue == null ? undefined : String(field.defaultValue)
-					}
-					placeholder={field.placeholder}
-					required={field.required}
-					readOnly={field.readOnly}
-					disabled={isPending}
-				/>
+        <Textarea
+          id={name}
+          name={name}
+          value={valueToString(value)}
+          onBlur={onBlur}
+          onChange={(event) => onChange(event.target.value || null)}
+          placeholder={field.placeholder}
+          required={field.required}
+          readOnly={field.readOnly}
+          disabled={isPending}
+          aria-invalid={isInvalid}
+        />
 
-				<FieldError />
-			</Field>
-		);
-	}
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	if (inputType === "number") {
-		const maxFractionDigits = field.formatOptions?.maximumFractionDigits;
+  if (inputType === "number") {
+    const maxFractionDigits = field.formatOptions?.maximumFractionDigits
 
-		return (
-			<Field>
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+    return (
+      <Field data-invalid={isInvalid}>
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-				<Input
-					id={name}
-					name={name}
-					type="number"
-					inputMode={maxFractionDigits ? "decimal" : "numeric"}
-					min={field.min}
-					max={field.max}
-					step={
-						field.step ??
-						(maxFractionDigits ? 1 / 10 ** maxFractionDigits : undefined)
-					}
-					defaultValue={
-						field.defaultValue == null
-							? undefined
-							: typeof field.defaultValue === "number"
-								? field.defaultValue
-								: String(field.defaultValue)
-					}
-					placeholder={field.placeholder}
-					required={field.required}
-					readOnly={field.readOnly}
-					disabled={isPending}
-				/>
+        <Input
+          id={name}
+          name={name}
+          type="number"
+          inputMode={maxFractionDigits ? "decimal" : "numeric"}
+          min={field.min}
+          max={field.max}
+          step={
+            field.step ??
+            (maxFractionDigits ? 1 / 10 ** maxFractionDigits : undefined)
+          }
+          value={typeof value === "number" ? value : ""}
+          onBlur={onBlur}
+          onChange={(event) =>
+            onChange(
+              event.target.value === "" ? null : event.target.valueAsNumber
+            )
+          }
+          placeholder={field.placeholder}
+          required={field.required}
+          readOnly={field.readOnly}
+          disabled={isPending}
+          aria-invalid={isInvalid}
+        />
 
-				<FieldError />
-			</Field>
-		);
-	}
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	if (inputType === "slider") {
-		return <SliderField name={name} field={field} isPending={isPending} />;
-	}
+  if (inputType === "slider") {
+    return (
+      <SliderField
+        name={name}
+        field={field}
+        value={value}
+        onBlur={onBlur}
+        onChange={onChange}
+        isInvalid={isInvalid}
+        errors={errors}
+        isPending={isPending}
+      />
+    )
+  }
 
-	if (inputType === "switch") {
-		return (
-			<Field orientation="horizontal">
-				<Switch
-					id={name}
-					name={name}
-					defaultChecked={
-						field.defaultValue === true || field.defaultValue === "true"
-					}
-					disabled={isPending || field.readOnly}
-				/>
+  if (inputType === "switch") {
+    return (
+      <Field data-invalid={isInvalid} orientation="horizontal">
+        <Switch
+          id={name}
+          name={name}
+          checked={value === true}
+          onBlur={onBlur}
+          onCheckedChange={onChange}
+          disabled={isPending || field.readOnly}
+          aria-invalid={isInvalid}
+        />
 
-				<FieldContent>
-					<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
-				</FieldContent>
-			</Field>
-		);
-	}
+        <FieldContent>
+          <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+        </FieldContent>
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	if (inputType === "checkbox") {
-		return (
-			<Field orientation="horizontal">
-				<Checkbox
-					id={name}
-					name={name}
-					defaultChecked={
-						field.defaultValue === true || field.defaultValue === "true"
-					}
-					required={field.required}
-					disabled={isPending || field.readOnly}
-				/>
+  if (inputType === "checkbox") {
+    return (
+      <Field data-invalid={isInvalid} orientation="horizontal">
+        <Checkbox
+          id={name}
+          name={name}
+          checked={value === true}
+          onBlur={onBlur}
+          onCheckedChange={(checked) => onChange(checked === true)}
+          required={field.required}
+          disabled={isPending || field.readOnly}
+          aria-invalid={isInvalid}
+        />
 
-				<FieldContent>
-					<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
-				</FieldContent>
-			</Field>
-		);
-	}
+        <FieldContent>
+          <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+        </FieldContent>
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	if (inputType === "select") {
-		return (
-			<Field>
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+  if (inputType === "select") {
+    return (
+      <Field data-invalid={isInvalid}>
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-				<Select
-					items={field.options ?? []}
-					name={name}
-					defaultValue={
-						field.defaultValue != null ? String(field.defaultValue) : undefined
-					}
-					required={field.required}
-					disabled={isPending || field.readOnly}
-				>
-					<SelectTrigger id={name} className="w-full">
-						<SelectValue placeholder={field.placeholder} />
-					</SelectTrigger>
+        <Select
+          items={field.options ?? []}
+          name={name}
+          value={valueToString(value) || undefined}
+          onValueChange={(nextValue) => onChange(nextValue)}
+          required={field.required}
+          disabled={isPending || field.readOnly}
+        >
+          <SelectTrigger
+            id={name}
+            className="w-full"
+            onBlur={onBlur}
+            aria-invalid={isInvalid}
+          >
+            <SelectValue placeholder={field.placeholder} />
+          </SelectTrigger>
 
-					<SelectContent>
-						<SelectGroup>
-							{field.options?.map((option) => (
-								<SelectItem key={option.value} value={option.value}>
-									{option.label}
-								</SelectItem>
-							))}
-						</SelectGroup>
-					</SelectContent>
-				</Select>
+          <SelectContent>
+            <SelectGroup>
+              {field.options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
 
-				<FieldError />
-			</Field>
-		);
-	}
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	if (inputType === "combobox") {
-		return (
-			<Field>
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+  if (inputType === "combobox") {
+    const selectedOption = field.options?.find(
+      (option) => option.value === valueToString(value)
+    )
 
-				<Combobox
-					items={field.options ?? []}
-					name={name}
-					defaultValue={
-						field.defaultValue != null ? String(field.defaultValue) : undefined
-					}
-					required={field.required}
-					disabled={isPending || field.readOnly}
-				>
-					<ComboboxInput placeholder={field.placeholder} id={name} />
+    return (
+      <Field data-invalid={isInvalid}>
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-					<ComboboxContent>
-						<ComboboxEmpty>No items found.</ComboboxEmpty>
+        <Combobox
+          items={field.options ?? []}
+          name={name}
+          value={selectedOption ?? null}
+          onValueChange={(option) => onChange(option?.value ?? null)}
+          required={field.required}
+          disabled={isPending || field.readOnly}
+        >
+          <ComboboxInput
+            placeholder={field.placeholder}
+            id={name}
+            onBlur={onBlur}
+            aria-invalid={isInvalid}
+          />
 
-						<ComboboxList>
-							{(option) => (
-								<ComboboxItem key={option.value} value={option}>
-									{option.label}
-								</ComboboxItem>
-							)}
-						</ComboboxList>
-					</ComboboxContent>
-				</Combobox>
+          <ComboboxContent>
+            <ComboboxEmpty>No items found.</ComboboxEmpty>
 
-				<FieldError />
-			</Field>
-		);
-	}
+            <ComboboxList>
+              {(option) => (
+                <ComboboxItem key={option.value} value={option}>
+                  {option.label}
+                </ComboboxItem>
+              )}
+            </ComboboxList>
+          </ComboboxContent>
+        </Combobox>
 
-	if (inputType === "date" || inputType === "datetime") {
-		return <DateInput name={name} field={field} isPending={isPending} />;
-	}
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	return <InputField name={name} field={field} isPending={isPending} />;
+  if (inputType === "date" || inputType === "datetime") {
+    return (
+      <DateInput
+        name={name}
+        field={field}
+        value={value}
+        onBlur={onBlur}
+        onChange={onChange}
+        isInvalid={isInvalid}
+        errors={errors}
+        isPending={isPending}
+      />
+    )
+  }
+
+  return (
+    <InputField
+      name={name}
+      field={field}
+      value={value}
+      onBlur={onBlur}
+      onChange={onChange}
+      isInvalid={isInvalid}
+      errors={errors}
+      isPending={isPending}
+    />
+  )
 }
 
-function InputField({ name, field, isPending }: AdditionalFieldProps) {
-	const inputRef = useRef<HTMLInputElement>(null);
+function InputField({
+  name,
+  field,
+  value,
+  onBlur,
+  onChange,
+  isInvalid,
+  errors,
+  isPending
+}: AdditionalFieldProps) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const fieldErrors = getFormFieldErrors(errors ?? [])
 
-	const hasPrefix = field.prefix != null;
-	const hasSuffix = field.suffix != null || field.copyable;
+  const hasPrefix = field.prefix != null
+  const hasSuffix = field.suffix != null || field.copyable
 
-	const isNumeric = field.type === "number";
-	const maxFractionDigits = field.formatOptions?.maximumFractionDigits;
-	const nativeInputType = isNumeric ? "number" : undefined;
-	const nativeInputMode = isNumeric
-		? maxFractionDigits
-			? "decimal"
-			: "numeric"
-		: undefined;
-	const nativeStep = maxFractionDigits
-		? 1 / 10 ** maxFractionDigits
-		: undefined;
+  const isNumeric = field.type === "number"
+  const maxFractionDigits = field.formatOptions?.maximumFractionDigits
+  const nativeInputType = isNumeric ? "number" : undefined
+  const nativeInputMode = isNumeric
+    ? maxFractionDigits
+      ? "decimal"
+      : "numeric"
+    : undefined
+  const nativeStep = maxFractionDigits ? 1 / 10 ** maxFractionDigits : undefined
 
-	if (hasPrefix || hasSuffix) {
-		return (
-			<Field>
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+  if (hasPrefix || hasSuffix) {
+    return (
+      <Field data-invalid={isInvalid}>
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-				<InputGroup>
-					{hasPrefix && (
-						<InputGroupAddon align="inline-start">
-							{field.prefix}
-						</InputGroupAddon>
-					)}
+        <InputGroup>
+          {hasPrefix && (
+            <InputGroupAddon align="inline-start">
+              {field.prefix}
+            </InputGroupAddon>
+          )}
 
-					<InputGroupInput
-						ref={inputRef}
-						id={name}
-						name={name}
-						type={nativeInputType}
-						inputMode={nativeInputMode}
-						step={nativeStep}
-						defaultValue={
-							field.defaultValue == null
-								? undefined
-								: String(field.defaultValue)
-						}
-						placeholder={field.placeholder}
-						required={field.required}
-						readOnly={field.readOnly}
-						disabled={isPending}
-					/>
+          <InputGroupInput
+            ref={inputRef}
+            id={name}
+            name={name}
+            type={nativeInputType}
+            inputMode={nativeInputMode}
+            step={nativeStep}
+            value={valueToString(value)}
+            onBlur={onBlur}
+            onChange={(event) => onChange(event.target.value || null)}
+            placeholder={field.placeholder}
+            required={field.required}
+            readOnly={field.readOnly}
+            disabled={isPending}
+            aria-invalid={isInvalid}
+          />
 
-					{field.copyable ? (
-						<InputGroupAddon align="inline-end">
-							<CopyButton
-								getValue={() => inputRef.current?.value}
-								isDisabled={isPending}
-							/>
-						</InputGroupAddon>
-					) : (
-						field.suffix != null && (
-							<InputGroupAddon align="inline-end">
-								{field.suffix}
-							</InputGroupAddon>
-						)
-					)}
-				</InputGroup>
+          {field.copyable ? (
+            <InputGroupAddon align="inline-end">
+              <CopyButton
+                getValue={() => inputRef.current?.value}
+                isDisabled={isPending}
+              />
+            </InputGroupAddon>
+          ) : (
+            field.suffix != null && (
+              <InputGroupAddon align="inline-end">
+                {field.suffix}
+              </InputGroupAddon>
+            )
+          )}
+        </InputGroup>
 
-				<FieldError />
-			</Field>
-		);
-	}
+        <FieldError errors={fieldErrors} />
+      </Field>
+    )
+  }
 
-	return (
-		<Field>
-			<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+  return (
+    <Field data-invalid={isInvalid}>
+      <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
 
-			<Input
-				id={name}
-				name={name}
-				type={nativeInputType}
-				inputMode={nativeInputMode}
-				step={nativeStep}
-				defaultValue={
-					field.defaultValue == null ? undefined : String(field.defaultValue)
-				}
-				placeholder={field.placeholder}
-				required={field.required}
-				readOnly={field.readOnly}
-				disabled={isPending}
-			/>
+      <Input
+        id={name}
+        name={name}
+        type={nativeInputType}
+        inputMode={nativeInputMode}
+        step={nativeStep}
+        value={valueToString(value)}
+        onBlur={onBlur}
+        onChange={(event) => onChange(event.target.value || null)}
+        placeholder={field.placeholder}
+        required={field.required}
+        readOnly={field.readOnly}
+        disabled={isPending}
+        aria-invalid={isInvalid}
+      />
 
-			<FieldError />
-		</Field>
-	);
+      <FieldError errors={fieldErrors} />
+    </Field>
+  )
 }
 
 /**
@@ -438,46 +518,53 @@ function InputField({ name, field, isPending }: AdditionalFieldProps) {
  * it next to the label and control the state to keep the displayed value in
  * sync. The selected value is submitted via the underlying Radix `name` prop.
  */
-function SliderField({ name, field, isPending }: AdditionalFieldProps) {
-	const maxFractionDigits = field.formatOptions?.maximumFractionDigits;
-	const min = field.min ?? 0;
-	const max = field.max ?? 100;
-	const step =
-		field.step ?? (maxFractionDigits ? 1 / 10 ** maxFractionDigits : 1);
-	const initial =
-		typeof field.defaultValue === "number"
-			? field.defaultValue
-			: field.defaultValue != null && !Number.isNaN(Number(field.defaultValue))
-				? Number(field.defaultValue)
-				: min;
+function SliderField({
+  name,
+  field,
+  value,
+  onBlur,
+  onChange,
+  isInvalid,
+  errors,
+  isPending
+}: AdditionalFieldProps) {
+  const maxFractionDigits = field.formatOptions?.maximumFractionDigits
+  const min = field.min ?? 0
+  const max = field.max ?? 100
+  const step =
+    field.step ?? (maxFractionDigits ? 1 / 10 ** maxFractionDigits : 1)
+  const numericValue = typeof value === "number" ? value : min
+  const fieldErrors = getFormFieldErrors(errors ?? [])
 
-	const [value, setValue] = useState<number>(initial);
+  const formatter = new Intl.NumberFormat(undefined, field.formatOptions)
 
-	const formatter = new Intl.NumberFormat(undefined, field.formatOptions);
+  return (
+    <Field data-invalid={isInvalid}>
+      <div className="flex items-center justify-between gap-2">
+        <FieldLabel htmlFor={name}>{field.label}</FieldLabel>
+        <span className="text-sm text-muted-foreground tabular-nums">
+          {formatter.format(numericValue)}
+        </span>
+      </div>
 
-	return (
-		<Field>
-			<div className="flex items-center justify-between gap-2">
-				<FieldLabel htmlFor={name}>{field.label}</FieldLabel>
-				<span className="text-sm text-muted-foreground tabular-nums">
-					{formatter.format(value)}
-				</span>
-			</div>
+      <Slider
+        id={name}
+        name={name}
+        value={[numericValue]}
+        onBlur={onBlur}
+        onValueChange={(nextValue) =>
+          onChange((Array.isArray(nextValue) ? nextValue[0] : nextValue) ?? min)
+        }
+        min={min}
+        max={max}
+        step={step}
+        disabled={isPending || field.readOnly}
+        aria-invalid={isInvalid}
+      />
 
-			<Slider
-				id={name}
-				name={name}
-				value={[value]}
-				onValueChange={(v) => setValue((Array.isArray(v) ? v[0] : v) ?? min)}
-				min={min}
-				max={max}
-				step={step}
-				disabled={isPending || field.readOnly}
-			/>
-
-			<FieldError />
-		</Field>
-	);
+      <FieldError errors={fieldErrors} />
+    </Field>
+  )
 }
 
 /**
@@ -485,117 +572,119 @@ function SliderField({ name, field, isPending }: AdditionalFieldProps) {
  * (optionally) `<input type="time">` for the time. Submits the combined ISO
  * value via a hidden `<input>` so it shows up in `FormData`.
  */
-function DateInput({ name, field, isPending }: AdditionalFieldProps) {
-	const { localization } = useAuth();
-	const inputType = resolveInputType(field);
-	const isDateTime = inputType === "datetime";
+function DateInput({
+  name,
+  field,
+  value,
+  onBlur,
+  onChange,
+  isInvalid,
+  errors,
+  isPending
+}: AdditionalFieldProps) {
+  const { localization } = useAuth()
+  const inputType = resolveInputType(field)
+  const isDateTime = inputType === "datetime"
+  const fieldErrors = getFormFieldErrors(errors ?? [])
 
-	const [date, setDate] = useState<Date | undefined>(
-		toDate(field.defaultValue),
-	);
-	const [time, setTime] = useState<string>(
-		isDateTime && date ? formatTime(date) : "",
-	);
-	const [open, setOpen] = useState(false);
-	const [error, setError] = useState<string>();
+  const date = toDate(value)
+  const [time, setTime] = useState<string>(
+    isDateTime && date ? formatTime(date) : ""
+  )
+  const [open, setOpen] = useState(false)
 
-	// Compose the hidden form value: ISO date for "date", ISO datetime for
-	// "datetime" (date + time).
-	let formValue = "";
-	if (date) {
-		if (isDateTime && time && time.trim() !== "") {
-			const [h = "0", m = "0", s = "0"] = time.split(":");
-			const combined = new Date(date);
-			combined.setHours(Number(h), Number(m), Number(s), 0);
-			formValue = combined.toISOString();
-		} else {
-			// Anchor to local midnight then serialize as ISO so the downstream
-			// `parseAdditionalFieldValue` parses the same calendar day regardless
-			// of timezone (a bare "YYYY-MM-DD" would be parsed as UTC midnight).
-			// Datetime fields with a blank time also fall through here, defaulting
-			// the time to local midnight since the parsed value is always a `Date`.
-			const localMidnight = new Date(date);
-			localMidnight.setHours(0, 0, 0, 0);
-			formValue = localMidnight.toISOString();
-		}
-	}
+  // Compose the hidden form value: ISO date for "date", ISO datetime for
+  // "datetime" (date + time).
+  return (
+    <Field data-invalid={isInvalid}>
+      <FieldLabel htmlFor={`${name}-date`}>{field.label}</FieldLabel>
 
-	return (
-		<Field data-invalid={!!error}>
-			<FieldLabel htmlFor={`${name}-date`}>{field.label}</FieldLabel>
+      <div className="relative flex gap-2">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger
+            type="button"
+            id={`${name}-date`}
+            data-empty={!date}
+            aria-invalid={isInvalid}
+            aria-required={field.required}
+            onBlur={onBlur}
+            disabled={isPending || field.readOnly}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "flex-1 justify-between font-normal",
+              "data-[empty=true]:text-muted-foreground"
+            )}
+          >
+            {date ? format(date, "PPP") : <span>{field.placeholder}</span>}
 
-			<div className="relative flex gap-2">
-				{/* Visually-hidden input so required constraint validation fires on submit.
-            onInvalid suppresses the native browser balloon and routes the message
-            through the styled <FieldError> below — matching the pattern used by
-            the Name / Email / Password fields in the sign-up form. */}
-				<input
-					aria-label={typeof field.label === "string" ? field.label : name}
-					type="text"
-					name={name}
-					value={formValue}
-					onChange={() => {}}
-					required={field.required}
-					tabIndex={-1}
-					className="sr-only"
-					onInvalid={(e) => {
-						e.preventDefault();
-						setError((e.target as HTMLInputElement).validationMessage);
-					}}
-				/>
-				<Popover open={open} onOpenChange={setOpen}>
-					<PopoverTrigger
-						type="button"
-						id={`${name}-date`}
-						data-empty={!date}
-						aria-invalid={!!error}
-						disabled={isPending || field.readOnly}
-						className={cn(
-							buttonVariants({ variant: "outline" }),
-							"flex-1 justify-between font-normal",
-							"data-[empty=true]:text-muted-foreground",
-						)}
-					>
-						{date ? format(date, "PPP") : <span>{field.placeholder}</span>}
+            {isDateTime ? <ChevronDownIcon /> : <CalendarIcon />}
+          </PopoverTrigger>
 
-						{isDateTime ? <ChevronDownIcon /> : <CalendarIcon />}
-					</PopoverTrigger>
+          <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              defaultMonth={date}
+              captionLayout="dropdown"
+              onSelect={(value) => {
+                if (!value) {
+                  onChange(null)
+                } else {
+                  const nextValue = new Date(value)
+                  if (isDateTime && time.trim()) {
+                    const [hours = "0", minutes = "0", seconds = "0"] =
+                      time.split(":")
+                    nextValue.setHours(
+                      Number(hours),
+                      Number(minutes),
+                      Number(seconds),
+                      0
+                    )
+                  } else {
+                    nextValue.setHours(0, 0, 0, 0)
+                  }
+                  onChange(nextValue)
+                }
+                if (!isDateTime) setOpen(false)
+              }}
+            />
+          </PopoverContent>
+        </Popover>
 
-					<PopoverContent className="w-auto overflow-hidden p-0" align="start">
-						<Calendar
-							mode="single"
-							selected={date}
-							defaultMonth={date}
-							captionLayout="dropdown"
-							onSelect={(value) => {
-								setDate(value);
-								if (value) setError(undefined);
-								if (!isDateTime) setOpen(false);
-							}}
-						/>
-					</PopoverContent>
-				</Popover>
+        {isDateTime && (
+          <Field className="w-32">
+            <FieldLabel htmlFor={`${name}-time`} className="sr-only">
+              {localization.settings.time}
+            </FieldLabel>
 
-				{isDateTime && (
-					<Field className="w-32">
-						<FieldLabel htmlFor={`${name}-time`} className="sr-only">
-							{localization.settings.time}
-						</FieldLabel>
+            <Input
+              type="time"
+              id={`${name}-time`}
+              step="1"
+              value={time}
+              onChange={(event) => {
+                const nextTime = event.target.value
+                setTime(nextTime)
+                if (!date) return
+                const nextValue = new Date(date)
+                const [hours = "0", minutes = "0", seconds = "0"] =
+                  nextTime.split(":")
+                nextValue.setHours(
+                  Number(hours),
+                  Number(minutes),
+                  Number(seconds),
+                  0
+                )
+                onChange(nextValue)
+              }}
+              disabled={isPending || field.readOnly}
+              className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            />
+          </Field>
+        )}
+      </div>
 
-						<Input
-							type="time"
-							id={`${name}-time`}
-							step="1"
-							value={time}
-							onChange={(e) => setTime(e.target.value)}
-							disabled={isPending || field.readOnly}
-							className="appearance-none bg-background [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
-						/>
-					</Field>
-				)}
-			</div>
-
-			<FieldError>{error}</FieldError>
-		</Field>
-	);
+      <FieldError errors={fieldErrors} />
+    </Field>
+  )
 }

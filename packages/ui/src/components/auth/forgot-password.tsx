@@ -1,34 +1,27 @@
-"use client";
+"use client"
 
-import { getViewURL } from "@better-auth-ui/core";
+import { getViewURL, validateEmailAddress } from "@better-auth-ui/core"
 import {
-	useAuth,
-	useFetchOptions,
-	useRequestPasswordReset,
-} from "@better-auth-ui/react";
-import { Button } from "@repo/ui/components/button";
+  useAuth,
+  useFetchOptions,
+  useRequestPasswordReset
+} from "@better-auth-ui/react"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@repo/ui/components/card"
 import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@repo/ui/components/card";
-import {
-	Field,
-	FieldDescription,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
-} from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
-import { Spinner } from "@repo/ui/components/spinner";
-import { cn } from "@repo/ui/lib/utils";
-import { type SyntheticEvent, useState } from "react";
-import { RESET_LINK_SENT_STORAGE_KEY } from "./reset-link-sent";
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel
+} from "@repo/ui/components/field"
+import { Input } from "@repo/ui/components/input"
+import { cn } from "cn"
+import { isAuthFormFieldInvalid, useAuthForm } from "./auth-form"
+import { RESET_LINK_SENT_STORAGE_KEY } from "./reset-link-sent"
 
 export type ForgotPasswordProps = {
-	className?: string;
-};
+  className?: string
+}
 
 /**
  * Render a card-based "Forgot Password" form that sends a password-reset email.
@@ -42,124 +35,124 @@ export type ForgotPasswordProps = {
  * @returns The forgot-password form UI as a JSX element
  */
 export function ForgotPassword({ className }: ForgotPasswordProps) {
-	const {
-		authClient,
-		baseURL,
-		basePaths,
-		localization,
-		navigate,
-		plugins,
-		viewPaths,
-		Link,
-	} = useAuth();
+  const {
+    authClient,
+    baseURL,
+    basePaths,
+    localization,
+    navigate,
+    plugins,
+    viewPaths,
+    Link
+  } = useAuth()
 
-	const { fetchOptions, resetFetchOptions } = useFetchOptions();
+  const { fetchOptions, resetFetchOptions } = useFetchOptions()
 
-	const { mutate: requestPasswordReset, isPending } = useRequestPasswordReset(
-		authClient,
-		{
-			onError: () => {
-				resetFetchOptions();
-			},
-			onSuccess: (_data, { email }) => {
-				sessionStorage.setItem(RESET_LINK_SENT_STORAGE_KEY, email);
-				navigate({ to: `${basePaths.auth}/${viewPaths.auth.resetLinkSent}` });
-			},
-		},
-	);
+  const { mutateAsync: requestPasswordReset, isPending } =
+    useRequestPasswordReset(authClient, {
+      onError: () => {
+        resetFetchOptions()
+      },
+      onSuccess: (_data, { email }) => {
+        sessionStorage.setItem(RESET_LINK_SENT_STORAGE_KEY, email)
+        navigate({ to: `${basePaths.auth}/${viewPaths.auth.resetLinkSent}` })
+      }
+    })
 
-	function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
-		const formData = new FormData(e.currentTarget);
-		requestPasswordReset({
-			email: formData.get("email") as string,
-			redirectTo: getViewURL(
-				baseURL,
-				basePaths.auth,
-				viewPaths.auth.resetPassword,
-			),
-			fetchOptions,
-		});
-	}
+  const form = useAuthForm({
+    defaultValues: { email: "" },
+    onSubmit: async ({ value }) =>
+      await requestPasswordReset({
+        email: value.email,
+        redirectTo: getViewURL(
+          baseURL,
+          basePaths.auth,
+          viewPaths.auth.resetPassword
+        ),
+        fetchOptions
+      })
+  })
 
-	const Captcha = plugins.find(
-		(plugin) => plugin.captchaComponent,
-	)?.captchaComponent;
+  const Captcha = plugins.find(
+    (plugin) => plugin.captchaComponent
+  )?.captchaComponent
 
-	const [fieldErrors, setFieldErrors] = useState<{
-		email?: string;
-	}>({});
+  return (
+    <Card className={cn("w-full max-w-sm", className)}>
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">
+          {localization.auth.forgotPassword}
+        </CardTitle>
+      </CardHeader>
 
-	return (
-		<Card className={cn("w-full max-w-sm", className)}>
-			<CardHeader>
-				<CardTitle className="text-xl font-semibold">
-					{localization.auth.forgotPassword}
-				</CardTitle>
-			</CardHeader>
+      <CardContent>
+        <form.AppForm>
+          <form.AuthFormRoot>
+            <FieldGroup>
+              <form.AppField
+                name="email"
+                validators={{
+                  onChange: ({ value }) =>
+                    validateEmailAddress(value, {
+                      invalidMessage: localization.auth.invalidEmail,
+                      requiredMessage: localization.auth.fieldRequired
+                    })
+                }}
+              >
+                {(field) => {
+                  const isInvalid = isAuthFormFieldInvalid(field.state.meta)
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="email">
+                        {localization.auth.email}
+                      </FieldLabel>
+                      <Input
+                        id="email"
+                        name={field.name}
+                        type="email"
+                        autoComplete="email"
+                        placeholder={localization.auth.emailPlaceholder}
+                        required
+                        disabled={isPending}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(event) =>
+                          field.handleChange(event.target.value)
+                        }
+                        aria-invalid={isInvalid}
+                      />
+                      <field.AuthFormFieldError />
+                    </Field>
+                  )
+                }}
+              </form.AppField>
 
-			<CardContent>
-				<form onSubmit={handleSubmit}>
-					<FieldGroup>
-						<Field data-invalid={!!fieldErrors.email}>
-							<FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
+              {Captcha && <div className="flex justify-center">{Captcha}</div>}
 
-							<Input
-								id="email"
-								name="email"
-								type="email"
-								autoComplete="email"
-								placeholder={localization.auth.emailPlaceholder}
-								required
-								disabled={isPending}
-								onChange={() => {
-									setFieldErrors((prev) => ({
-										...prev,
-										email: undefined,
-									}));
-								}}
-								onInvalid={(e) => {
-									e.preventDefault();
-									const el = e.target as HTMLInputElement;
-									const msg = el.validity.valueMissing
-										? localization.auth.fieldRequired
-										: localization.auth.invalidEmail;
+              <div className="flex flex-col gap-3">
+                <form.AuthFormSubmitButton
+                  isPending={isPending}
+                  disabled={isPending}
+                >
+                  {localization.auth.sendResetLink}
+                </form.AuthFormSubmitButton>
+              </div>
+            </FieldGroup>
+          </form.AuthFormRoot>
+        </form.AppForm>
 
-									setFieldErrors((prev) => ({
-										...prev,
-										email: msg,
-									}));
-								}}
-								aria-invalid={!!fieldErrors.email}
-							/>
-
-							<FieldError>{fieldErrors.email}</FieldError>
-						</Field>
-
-						{Captcha && <div className="flex justify-center">{Captcha}</div>}
-
-						<div className="flex flex-col gap-3">
-							<Button type="submit" disabled={isPending}>
-								{isPending && <Spinner />}
-
-								{localization.auth.sendResetLink}
-							</Button>
-						</div>
-					</FieldGroup>
-				</form>
-
-				<div className="flex flex-col gap-3 items-center w-full mt-4">
-					<FieldDescription className="text-center">
-						{localization.auth.rememberYourPassword}{" "}
-						<Link
-							href={`${basePaths.auth}/${viewPaths.auth.signIn}`}
-							className="underline underline-offset-4"
-						>
-							{localization.auth.signIn}
-						</Link>
-					</FieldDescription>
-				</div>
-			</CardContent>
-		</Card>
-	);
+        <div className="flex flex-col gap-3 items-center w-full mt-4">
+          <FieldDescription className="text-center">
+            {localization.auth.rememberYourPassword}{" "}
+            <Link
+              href={`${basePaths.auth}/${viewPaths.auth.signIn}`}
+              className="underline underline-offset-4"
+            >
+              {localization.auth.signIn}
+            </Link>
+          </FieldDescription>
+        </div>
+      </CardContent>
+    </Card>
+  )
 }

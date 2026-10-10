@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Start feat-009 (@better-auth-ui to 1.7.x) on a branch from feature/better-auth-upgrade. see feature_list.json for scope.
+- feat-009 is on feature/better-auth-ui-1-7, pending the user's visual check of the auth screens; then merge into feature/better-auth-upgrade and open the single PR to main. see feature_list.json for scope.

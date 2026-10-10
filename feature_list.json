@@ -78,8 +78,8 @@
 			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. feat-007 excludes vendored UI code from Biome and feat-008 refreshes the shadcn components first, so only the better-auth-ui components remain to sync; take registry files as they are (no reformatting). Stop and report if the change turns out to be large.",
 			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
 			"dependencies": ["feat-008"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "in-progress",
+			"evidence": "2026-10-10 devcontainer: bumped @better-auth-ui/react+core to ^1.7.27 (packages/ui, apps/web); jump broke 17 type errors in ~8 vendored files (UsernameAuthClient/MultiSessionAuthClient/useSetActiveSession, core/plugins path, AuthSocialProvider type) because 1.7 moved to a plugin architecture. Re-synced all 22 vendored registry items from @better-auth-ui via `shadcn add @better-auth-ui/<item>... --overwrite --yes` (33 files overwritten, 10 new: alert, alert-dialog, auth-form, auth-result, password-strength-meter, reauthentication, session-actions, lib/auth/auth-plugin, lib/auth/last-login-method-plugin; +@tanstack/react-form in packages/ui). App fixes: (app)/layout.tsx uses ensureSessionServer from @better-auth-ui/core/server (react/server was removed; same query key so SSR hydration is unchanged); ui-augmentations.d.ts now imports @repo/ui/lib/auth/auth-plugin and the hand-written lib/auth-plugin.ts was deleted (registry file does the registration). ./init.sh --full passed (33 tests). My feat-006 local edits to linked-account/user-avatar/user-view were superseded by the registry versions. PENDING: user visual check of sign-in, sign-up, forgot/reset password, sign-out, user menu, session hydration (no flash of signed-out UI) before merging into feature/better-auth-upgrade."
 		}
 	]
 }
