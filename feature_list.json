@@ -15,8 +15,8 @@
 			"description": "Add Vitest to apps/web (devDependency, `test` script, `@/` alias in a vitest config) and unit tests for lib/format-money.ts, lib/format-date.ts and lib/monthly-summary.ts (statementTotals, shiftMonth, monthlyTrend). Wire `pnpm --filter web test` into init.sh and the CLAUDE.md invariants, and add a `test` task to turbo.json if it is run from the root. Approved by user to edit apps/web/package.json and turbo.json for this task.",
 			"scope": "apps/web (package.json, vitest config, lib/*.test.ts), turbo.json, init.sh, CLAUDE.md",
 			"dependencies": ["feat-001"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-08 devcontainer: pnpm --filter web test -> 3 files, 22 tests passed; ./init.sh --full passed (install, lint:ci, check-types, test, build:web). Also added root `test` script (turbo run test)."
 		},
 		{
 			"id": "feat-003",

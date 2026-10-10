@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-- Goal: harness setup finished; next real work is feat-002 (Vitest in apps/web), then feat-003 Overview totals, feat-004 charts
+- Goal: harness setup finished; feat-002 (Vitest) done; next is feat-003 Overview totals, then feat-004 charts
 - Current status: baseline green, no feature started
 - Branch / commit: feature/ai-agents-harness, harness files still uncommitted
 
@@ -12,6 +12,7 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
+| Tests | `pnpm test` | 22 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks
@@ -26,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Implement feat-002 only; see feature_list.json for scope.
+- Implement feat-003 only; see feature_list.json for scope.

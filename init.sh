@@ -1,6 +1,6 @@
 #!/bin/bash
 # Standard startup + verification path. Mirrors .github/workflows/ci.yml.
-#   ./init.sh          fast default: install, lint:ci (read-only), check-types
+#   ./init.sh          fast default: install, lint:ci (read-only), check-types, test
 #   ./init.sh --full   fast default + `pnpm build:web` (next build)
 set -e
 
@@ -34,6 +34,10 @@ done_step
 
 step "pnpm check-types"
 pnpm check-types
+done_step
+
+step "pnpm test (vitest)"
+pnpm test
 done_step
 
 if [ $FULL = 1 ]; then

@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-08
-**Active Feature:** none yet (next: feat-002 Vitest)
+**Active Feature:** none yet (feat-002 Vitest done; next: feat-003 Overview totals)
 
 ## Status
 
@@ -13,15 +13,17 @@
 - [x] `init.sh` rewritten to mirror CI: `pnpm install --frozen-lockfile`, `pnpm lint:ci`, `pnpm check-types`; `--full` adds `pnpm build:web`
 - [x] feat-001 green baseline (cold timings in devcontainer: fast ~10s, full ~30s)
 - [x] `CLAUDE.md` trimmed to a map with repo map and invariants
+- [x] feat-002 Vitest in apps/web: 22 tests (format-money, format-date, monthly-summary); `pnpm test` wired into root, turbo.json and init.sh
 
 ### What's Next
 
-1. Order: feat-002 Vitest, feat-003 Overview totals, feat-004 Overview charts (recharts via shadcn, approved). Commit harness files once the user confirms what to include
+1. Order: feat-003 Overview totals, feat-004 Overview charts (recharts via shadcn, approved). Commit harness files once the user confirms what to include
 
 ## Blockers / Risks
 
 - [ ] Host `node_modules` was a stale devcontainer install; run `./init.sh` inside the devcontainer (`/workspace`), not on the host (host pnpm asks to purge modules).
-- [ ] No test runner exists; verification is lint + types + build only.
+- [ ] Tests cover only apps/web/lib pure helpers; no component/page tests.
+- [ ] `pnpm approve-builds` warning: esbuild build scripts are ignored (tests still run).
 - [ ] Root `pnpm lint` is `biome check --write` (mutates files); `init.sh` deliberately uses `lint:ci`.
 - [ ] `dev` scripts hardcode `/workspace/.env`; README mentions `AUTH_SECRET` but `.env.example` uses `BETTER_AUTH_SECRET`.
 

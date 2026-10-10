@@ -7,6 +7,7 @@
 		"build:web": "turbo run build --filter=web",
 		"build:vercel": "./packages/scripts/build-vercel.sh",
 		"check-types": "turbo run check-types",
+		"test": "turbo run test",
 		"lint": "turbo run lint",
 		"lint:ci": "biome ci .",
 		"deploy": "vercel deploy",

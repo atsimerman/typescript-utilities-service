@@ -36,7 +36,7 @@ Node/pnpm run in the devcontainer: the repo is mounted at `/workspace` (`docker 
 ## Invariants
 
 - Do **not** use `pnpm lint` for verification: it runs `biome check --write` and edits files. Use `pnpm lint:ci` (read-only, what CI runs). Biome uses tabs; `biome ci .` also checks JSON like `feature_list.json`.
-- No test runner exists yet; verification is `lint:ci` + `check-types` (+ `build:web` with `--full`).
+- Verification is `lint:ci` + `check-types` + `pnpm test` (Vitest, `apps/web/lib/**/*.test.ts`), plus `build:web` with `--full`. Put new pure logic in `lib/` with a test next to it.
 - `next build` needs `DATABASE_URL` set (a dummy value is fine; `init.sh` sets one). Never commit `.env`.
 - Biome ignores CSS, `migrations/` and `drizzle/` (see `biome.json`).
 
