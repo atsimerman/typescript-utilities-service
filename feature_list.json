@@ -107,6 +107,33 @@
 			"dependencies": ["feat-011"],
 			"status": "todo",
 			"evidence": ""
+		},
+		{
+			"id": "feat-013",
+			"name": "Update VS Code TypeScript SDK setting",
+			"description": "Replace the deprecated `typescript.tsdk` in .vscode/settings.json with `js/ts.tsdk.path` (same value, node_modules/typescript/lib). Check that the path resolves to a TypeScript install in the devcontainer and on the host, and that VS Code still offers the workspace TypeScript version.",
+			"scope": ".vscode/settings.json",
+			"dependencies": ["feat-010"],
+			"status": "todo",
+			"evidence": ""
+		},
+		{
+			"id": "feat-014",
+			"name": "Harden database initialization",
+			"description": "Keep `pg` + Drizzle and stay hosting agnostic (no vendor packages, no Neon or Vercel driver). In packages/database/src/index.ts: add a `pool.on(\"error\")` listener so a dropped idle client cannot crash the process; make the pool size configurable (e.g. DATABASE_POOL_MAX, default 3); export `closeDB()` that ends the pool and clears the cached handle; export a `createDB(url, options)` factory next to the cached `getDB()` and cover it with Vitest tests (no real database needed); consider a `Symbol.for` cache key. Document in CLAUDE.md or the package that named prepared statements must not be used (PgBouncer transaction mode). Verify how `pg` treats `sslmode` in a Neon-style DATABASE_URL (recent pg versions warn about sslmode aliases) and fix the URL or config if affected. Verify with `./init.sh --full`.",
+			"scope": "packages/database/src/index.ts (+ tests), packages/database/package.json (test script if needed), CLAUDE.md or packages/database docs, .env.example (new variable)",
+			"dependencies": ["feat-010"],
+			"status": "todo",
+			"evidence": ""
+		},
+		{
+			"id": "feat-015",
+			"name": "Isolate Vercel-specific logic",
+			"description": "Move the Vercel environment sniffing in packages/auth/src/index.ts (VERCEL_ENV, VERCEL_URL, VERCEL_PROJECT_PRODUCTION_URL, VERCEL_BRANCH_URL) into one small module with Vitest tests for base URL and trusted origins. Make it explicit that BETTER_AUTH_URL (plus BETTER_AUTH_TRUSTED_ORIGINS) is enough on any host and that the Vercel branches are optional fallbacks. Mark build:vercel, deploy, deploy:prod, packages/scripts/build-vercel.sh and DEPLOYMENT.md as Vercel-specific. No behavior change on Vercel or elsewhere.",
+			"scope": "packages/auth/src (+ tests), package.json (script comments or grouping only), .env.example comments",
+			"dependencies": ["feat-014"],
+			"status": "todo",
+			"evidence": ""
 		}
 	]
 }
