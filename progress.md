@@ -36,6 +36,7 @@
 
 ## Decisions Made
 
+- **Branching for the better-auth upgrade**: one integration branch `feature/better-auth-upgrade` (off main) collects the task branches. Each task gets its own `feature/...` branch off the integration branch and is merged back with `--no-ff`; only the integration branch goes to main as one PR. feat-006 = `feature/better-auth-1-7` (merged), feat-007 and feat-008 next.
 - **Verification mirrors CI**: lint:ci, check-types, build:web. Build only in `--full` to keep the default fast.
 
 ## Files Modified This Session
