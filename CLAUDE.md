@@ -38,7 +38,7 @@ Node/pnpm run in the devcontainer: the repo is mounted at `/workspace` (`docker 
 - Do **not** use `pnpm lint` for verification: it runs `biome check --write` and edits files. Use `pnpm lint:ci` (read-only, what CI runs). Biome uses tabs; `biome ci .` also checks JSON like `feature_list.json`.
 - Verification is `lint:ci` + `check-types` + `pnpm test` (Vitest, `apps/web/lib/**/*.test.ts`), plus `build:web` with `--full`. Put new pure logic in `lib/` with a test next to it.
 - `next build` needs `DATABASE_URL` set (a dummy value is fine; `init.sh` sets one). Never commit `.env`.
-- Biome ignores CSS, `migrations/` and `drizzle/` (see `biome.json`).
+- Biome ignores CSS, `migrations/` and `drizzle/` (see `biome.json`) and the vendored UI code in `packages/ui/src/{components,lib,hooks}` (shadcn / better-auth-ui, see `packages/ui/biome.json`). Don't reformat or lint-fix those files; `check-types` still covers them. When syncing from the registry, keep the files as they are.
 
 ## Deeper docs
 

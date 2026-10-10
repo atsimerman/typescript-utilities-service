@@ -1,22 +1,23 @@
-"use client";
+"use client"
 
-import { useAuth, useListAccounts } from "@better-auth-ui/react";
-import { Card, CardContent } from "@repo/ui/components/card";
+import { getProviderId } from "@better-auth-ui/core"
+import { useAuth, useListAccounts } from "@better-auth-ui/react"
+import { Fragment } from "react"
+import { Card, CardContent } from "@repo/ui/components/card"
 import {
-	Item,
-	ItemContent,
-	ItemGroup,
-	ItemMedia,
-	ItemSeparator,
-} from "@repo/ui/components/item";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { cn } from "@repo/ui/lib/utils";
-import { Fragment } from "react";
-import { LinkedAccount } from "./linked-account";
+  Item,
+  ItemContent,
+  ItemGroup,
+  ItemMedia,
+  ItemSeparator
+} from "@repo/ui/components/item"
+import { Skeleton } from "@repo/ui/components/skeleton"
+import { cn } from "cn"
+import { LinkedAccount } from "./linked-account"
 
 export type LinkedAccountsProps = {
-	className?: string;
-};
+  className?: string
+}
 
 /**
  * Render a card showing linked social accounts and available social providers to link.
@@ -28,81 +29,90 @@ export type LinkedAccountsProps = {
  * @returns A JSX element containing the linked accounts card
  */
 export function LinkedAccounts({ className }: LinkedAccountsProps) {
-	const {
-		authClient,
-		localization,
-		multipleAccountsPerProvider,
-		socialProviders,
-	} = useAuth();
+  const {
+    authClient,
+    allowUnlinkingAllAccounts,
+    localization,
+    multipleAccountsPerProvider,
+    socialProviders
+  } = useAuth()
 
-	const { data: accounts, isPending } = useListAccounts(authClient);
+  const { data: accounts, isPending } = useListAccounts(authClient)
 
-	const linkedAccounts = accounts?.filter(
-		(account) => account.providerId !== "credential",
-	);
+  const linkedAccounts = accounts?.filter(
+    (account) => account.providerId !== "credential"
+  )
+  const canUnlink =
+    allowUnlinkingAllAccounts === true || (accounts?.length ?? 0) > 1
 
-	const linkedProviderIds = new Set(linkedAccounts?.map((a) => a.providerId));
+  const linkedProviderIds = new Set(linkedAccounts?.map((a) => a.providerId))
 
-	const availableProviders =
-		multipleAccountsPerProvider === false
-			? socialProviders?.filter((p) => !linkedProviderIds.has(p))
-			: socialProviders;
+  const availableProviders =
+    multipleAccountsPerProvider === false
+      ? socialProviders?.filter(
+          (provider) => !linkedProviderIds.has(getProviderId(provider))
+        )
+      : socialProviders
 
-	const allRows = [
-		...(linkedAccounts?.map((account) => ({
-			key: account.id,
-			account,
-			provider: account.providerId,
-		})) ?? []),
-		...(availableProviders?.map((provider) => ({
-			key: provider,
-			account: undefined,
-			provider,
-		})) ?? []),
-	];
+  const allRows = [
+    ...(linkedAccounts?.map((account) => ({
+      key: account.id,
+      account,
+      provider:
+        socialProviders?.find(
+          (provider) => getProviderId(provider) === account.providerId
+        ) ?? account.providerId
+    })) ?? []),
+    ...(availableProviders?.map((provider) => ({
+      key: getProviderId(provider),
+      account: undefined,
+      provider
+    })) ?? [])
+  ]
 
-	return (
-		<div>
-			<h2 className="text-sm font-semibold mb-3">
-				{localization.settings.linkedAccounts}
-			</h2>
+  return (
+    <div>
+      <h2 className="text-sm font-semibold mb-3">
+        {localization.settings.linkedAccounts}
+      </h2>
 
-			<Card className={cn("p-0", className)}>
-				<CardContent className="p-0">
-					<ItemGroup className="gap-0">
-						{isPending
-							? socialProviders?.map((provider, index) => (
-									<Fragment key={provider}>
-										{index > 0 && <ItemSeparator />}
-										<AccountRowSkeleton />
-									</Fragment>
-								))
-							: allRows.map((row, index) => (
-									<Fragment key={row.key}>
-										{index > 0 && <ItemSeparator />}
-										<LinkedAccount
-											account={row.account}
-											provider={row.provider}
-										/>
-									</Fragment>
-								))}
-					</ItemGroup>
-				</CardContent>
-			</Card>
-		</div>
-	);
+      <Card className={cn("p-0", className)}>
+        <CardContent className="p-0">
+          <ItemGroup className="gap-0">
+            {isPending
+              ? socialProviders?.map((provider, index) => (
+                  <Fragment key={getProviderId(provider)}>
+                    {index > 0 && <ItemSeparator />}
+                    <AccountRowSkeleton />
+                  </Fragment>
+                ))
+              : allRows.map((row, index) => (
+                  <Fragment key={row.key}>
+                    {index > 0 && <ItemSeparator />}
+                    <LinkedAccount
+                      account={row.account}
+                      canUnlink={canUnlink}
+                      provider={row.provider}
+                    />
+                  </Fragment>
+                ))}
+          </ItemGroup>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }
 
 function AccountRowSkeleton() {
-	return (
-		<Item>
-			<ItemMedia>
-				<Skeleton className="size-10 rounded-md" />
-			</ItemMedia>
-			<ItemContent>
-				<Skeleton className="h-4 w-20" />
-				<Skeleton className="h-3 w-32" />
-			</ItemContent>
-		</Item>
-	);
+  return (
+    <Item>
+      <ItemMedia>
+        <Skeleton className="size-10 rounded-md" />
+      </ItemMedia>
+      <ItemContent>
+        <Skeleton className="h-4 w-20" />
+        <Skeleton className="h-3 w-32" />
+      </ItemContent>
+    </Item>
+  )
 }

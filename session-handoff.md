@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
-| Tests | `pnpm test` | 32 passed | apps/web/lib |
+| Tests | `pnpm test` | 33 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks
@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Choose the next feature with the user; add it to feature_list.json first. see feature_list.json for scope.
+- All features done. open the PR feature/better-auth-upgrade -> main on GitHub (no gh CLI here); after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.

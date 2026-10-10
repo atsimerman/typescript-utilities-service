@@ -1,20 +1,20 @@
-"use client";
+"use client"
 
-import { getViewURL } from "@better-auth-ui/core";
-import { useAuth, useChangeEmail, useSession } from "@better-auth-ui/react";
-import { Button } from "@repo/ui/components/button";
-import { Card, CardContent, CardFooter } from "@repo/ui/components/card";
-import { Field, FieldError, FieldLabel } from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { Spinner } from "@repo/ui/components/spinner";
-import { cn } from "@repo/ui/lib/utils";
-import { type SyntheticEvent, useState } from "react";
-import { toast } from "sonner";
+import { getViewURL, validateEmailAddress } from "@better-auth-ui/core"
+import { useAuth, useChangeEmail, useSession } from "@better-auth-ui/react"
+import { useEffect } from "react"
+import { toast } from "sonner"
+
+import { Card, CardContent, CardFooter } from "@repo/ui/components/card"
+import { Field, FieldLabel } from "@repo/ui/components/field"
+import { Input } from "@repo/ui/components/input"
+import { Skeleton } from "@repo/ui/components/skeleton"
+import { cn } from "cn"
+import { isAuthFormFieldInvalid, useAuthForm } from "../../auth-form"
 
 export type ChangeEmailProps = {
-	className?: string;
-};
+  className?: string
+}
 
 /**
  * Render a card containing a form to view and update the authenticated user's email.
@@ -26,88 +26,97 @@ export type ChangeEmailProps = {
  * @returns A JSX element rendering the change-email card and form
  */
 export function ChangeEmail({ className }: ChangeEmailProps) {
-	const { authClient, basePaths, baseURL, localization, viewPaths } = useAuth();
-	const { data: session } = useSession(authClient);
+  const { authClient, basePaths, baseURL, localization, viewPaths } = useAuth()
+  const { data: session } = useSession(authClient)
 
-	const { mutate: changeEmail, isPending } = useChangeEmail(authClient, {
-		onSuccess: () => toast.success(localization.settings.changeEmailSuccess),
-	});
+  const { mutateAsync: changeEmail, isPending } = useChangeEmail(authClient, {
+    onSuccess: () => toast.success(localization.settings.changeEmailSuccess)
+  })
 
-	const [fieldErrors, setFieldErrors] = useState<{
-		email?: string;
-	}>({});
+  const form = useAuthForm({
+    defaultValues: { email: "" },
+    onSubmit: async ({ value }) =>
+      await changeEmail({
+        callbackURL: getViewURL(
+          baseURL,
+          basePaths.settings,
+          viewPaths.settings.account
+        ),
+        newEmail: value.email
+      })
+  })
 
-	function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
+  useEffect(() => {
+    if (session) form.reset({ email: session.user.email })
+  }, [form, session])
 
-		const formData = new FormData(e.currentTarget);
-		changeEmail({
-			newEmail: formData.get("email") as string,
-			callbackURL: getViewURL(
-				baseURL,
-				basePaths.settings,
-				viewPaths.settings.account,
-			),
-		});
-	}
+  return (
+    <div>
+      <h2 className="text-sm font-semibold mb-3">
+        {localization.settings.changeEmail}
+      </h2>
 
-	return (
-		<div>
-			<h2 className="text-sm font-semibold mb-3">
-				{localization.settings.changeEmail}
-			</h2>
+      <form.AppForm>
+        <form.AuthFormRoot>
+          <Card className={cn(className)}>
+            <CardContent className="flex flex-col gap-6">
+              <form.AppField
+                name="email"
+                validators={{
+                  onChange: ({ value }) =>
+                    validateEmailAddress(value, {
+                      invalidMessage: localization.auth.invalidEmail,
+                      requiredMessage: localization.auth.fieldRequired
+                    })
+                }}
+              >
+                {(field) => {
+                  const isInvalid = isAuthFormFieldInvalid(field.state.meta)
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor="email">
+                        {localization.auth.email}
+                      </FieldLabel>
+                      {session ? (
+                        <Input
+                          id="email"
+                          name={field.name}
+                          type="email"
+                          autoComplete="email"
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(event) =>
+                            field.handleChange(event.target.value)
+                          }
+                          placeholder={localization.auth.emailPlaceholder}
+                          disabled={isPending}
+                          required
+                          aria-invalid={isInvalid}
+                        />
+                      ) : (
+                        <Skeleton>
+                          <Input className="invisible" />
+                        </Skeleton>
+                      )}
+                      <field.AuthFormFieldError />
+                    </Field>
+                  )
+                }}
+              </form.AppField>
+            </CardContent>
 
-			<form onSubmit={handleSubmit}>
-				<Card className={cn(className)}>
-					<CardContent className="flex flex-col gap-6">
-						<Field data-invalid={!!fieldErrors.email}>
-							<FieldLabel htmlFor="email">{localization.auth.email}</FieldLabel>
-
-							{session ? (
-								<Input
-									key={session?.user.email}
-									id="email"
-									name="email"
-									type="email"
-									autoComplete="email"
-									defaultValue={session?.user.email}
-									placeholder={localization.auth.emailPlaceholder}
-									disabled={isPending}
-									required
-									onChange={() => {
-										setFieldErrors((prev) => ({
-											...prev,
-											email: undefined,
-										}));
-									}}
-									onInvalid={(e) => {
-										e.preventDefault();
-										setFieldErrors((prev) => ({
-											...prev,
-											email: (e.target as HTMLInputElement).validationMessage,
-										}));
-									}}
-									aria-invalid={!!fieldErrors.email}
-								/>
-							) : (
-								<Skeleton>
-									<Input className="invisible" />
-								</Skeleton>
-							)}
-
-							<FieldError>{fieldErrors.email}</FieldError>
-						</Field>
-					</CardContent>
-
-					<CardFooter>
-						<Button type="submit" size="sm" disabled={isPending || !session}>
-							{isPending && <Spinner />}
-
-							{localization.settings.updateEmail}
-						</Button>
-					</CardFooter>
-				</Card>
-			</form>
-		</div>
-	);
+            <CardFooter>
+              <form.AuthFormSubmitButton
+                isPending={isPending}
+                size="sm"
+                disabled={isPending || !session}
+              >
+                {localization.settings.updateEmail}
+              </form.AuthFormSubmitButton>
+            </CardFooter>
+          </Card>
+        </form.AuthFormRoot>
+      </form.AppForm>
+    </div>
+  )
 }

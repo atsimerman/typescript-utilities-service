@@ -26,6 +26,10 @@ export function Providers({ children }: { children: ReactNode }) {
 				<AuthProvider
 					authClient={authClient}
 					redirectTo="/"
+					localization={{
+						// Email changes apply immediately (no verification email is sent).
+						settings: { changeEmailSuccess: "Email updated" },
+					}}
 					navigate={({ to, replace }) =>
 						replace ? router.replace(to) : router.push(to)
 					}

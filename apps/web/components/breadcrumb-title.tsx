@@ -103,6 +103,25 @@ export function BreadcrumbTitle() {
 		);
 	}
 
+	if (pathname.startsWith("/settings")) {
+		const isSecurity = pathname.startsWith("/settings/security");
+		return (
+			<>
+				<BreadcrumbItem className="hidden md:block">
+					<BreadcrumbLink href="/">Property billing</BreadcrumbLink>
+				</BreadcrumbItem>
+				<BreadcrumbSeparator className="hidden md:block" />
+				<BreadcrumbItem className="hidden md:block">
+					<BreadcrumbLink href="/settings/account">Settings</BreadcrumbLink>
+				</BreadcrumbItem>
+				<BreadcrumbSeparator className="hidden md:block" />
+				<BreadcrumbItem>
+					<BreadcrumbPage>{isSecurity ? "Security" : "Account"}</BreadcrumbPage>
+				</BreadcrumbItem>
+			</>
+		);
+	}
+
 	return (
 		<BreadcrumbItem className="hidden md:block">
 			<BreadcrumbLink href="/">Property billing</BreadcrumbLink>

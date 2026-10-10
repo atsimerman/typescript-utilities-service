@@ -6,4 +6,4 @@
 //
 // tsconfig `include: ["**/*.ts"]` picks this file up; nothing imports it at
 // runtime, so it contributes no JavaScript.
-import "@repo/ui/lib/auth-plugin";
+import "@repo/ui/lib/auth/auth-plugin";

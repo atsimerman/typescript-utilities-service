@@ -1,24 +1,33 @@
-"use client";
+"use client"
 
 import {
-	type AuthView,
-	authMutationKeys,
-	getProviderName,
-} from "@better-auth-ui/core";
-import { providerIcons, useAuth, useSignInSocial } from "@better-auth-ui/react";
-import { Button } from "@repo/ui/components/button";
-import { Spinner } from "@repo/ui/components/spinner";
-import { cn } from "@repo/ui/lib/utils";
-import { useIsMutating } from "@tanstack/react-query";
-import type { SocialProvider } from "better-auth/social-providers";
-import type { ComponentProps } from "react";
-import { LastUsedBadge } from "./last-login-method/last-used-badge";
+  type AuthSocialProvider,
+  type AuthView,
+  authMutationKeys,
+  getProviderId,
+  getProviderName,
+  type OAuthPopupAuthClient
+} from "@better-auth-ui/core"
+import {
+  renderProviderIcon,
+  useAuth,
+  useFetchOptions,
+  useSignInOAuthPopup,
+  useSignInSocial
+} from "@better-auth-ui/react"
+import { useIsMutating } from "@tanstack/react-query"
+import type { ComponentProps } from "react"
+
+import { Button } from "@repo/ui/components/button"
+import { Spinner } from "@repo/ui/components/spinner"
+import { cn } from "cn"
+import { LastUsedBadge } from "./last-login-method/last-used-badge"
 
 export type ProviderButtonProps = {
-	provider: SocialProvider;
-	display?: "full" | "name" | "icon";
-	view?: AuthView;
-} & Omit<ComponentProps<typeof Button>, "onClick" | "children" | "disabled">;
+  provider: AuthSocialProvider
+  display?: "full" | "name" | "icon"
+  view?: AuthView
+} & Omit<ComponentProps<typeof Button>, "onClick" | "children" | "disabled">
 
 /**
  * Social provider sign-in button.
@@ -27,59 +36,84 @@ export type ProviderButtonProps = {
  * @param display - `"full"` (e.g. "Continue with Google"), `"name"` (just the provider name), or `"icon"` (icon only).
  */
 export function ProviderButton({
-	provider,
-	display = "full",
-	view = "signIn",
-	variant = "outline",
-	className,
-	...props
+  provider,
+  display = "full",
+  view = "signIn",
+  variant = "outline",
+  className,
+  ...props
 }: ProviderButtonProps) {
-	const { authClient, baseURL, localization, redirectTo } = useAuth();
+  const {
+    authClient,
+    baseURL,
+    localization,
+    navigate,
+    redirectTo,
+    socialSignInMode
+  } = useAuth()
 
-	const callbackURL = `${baseURL}${redirectTo}`;
+  const callbackURL = `${baseURL}${redirectTo}`
+  const { fetchOptions, resetFetchOptions } = useFetchOptions()
 
-	const { mutate: signInSocial, isPending: signInSocialPending } =
-		useSignInSocial(authClient);
+  const { mutate: signInSocial, isPending: signInSocialPending } =
+    useSignInSocial(authClient, { onError: resetFetchOptions })
+  const { mutate: signInPopup, isPending: signInPopupPending } =
+    useSignInOAuthPopup(authClient as OAuthPopupAuthClient, {
+      onError: resetFetchOptions
+    })
 
-	const ProviderIcon = providerIcons[provider];
+  const providerId = getProviderId(provider)
+  const providerIcon = renderProviderIcon(provider)
 
-	const signInMutating = useIsMutating({
-		mutationKey: authMutationKeys.signIn.all,
-	});
-	const signUpMutating = useIsMutating({
-		mutationKey: authMutationKeys.signUp.all,
-	});
-	const isPending = signInMutating + signUpMutating > 0;
+  const signInMutating = useIsMutating({
+    mutationKey: authMutationKeys.signIn.all
+  })
+  const signUpMutating = useIsMutating({
+    mutationKey: authMutationKeys.signUp.all
+  })
+  const isPending = signInMutating + signUpMutating > 0
 
-	return (
-		<Button
-			type="button"
-			variant={variant}
-			disabled={isPending}
-			onClick={() => signInSocial({ provider, callbackURL })}
-			className={cn("relative overflow-visible", className)}
-			{...props}
-		>
-			{signInSocialPending ? (
-				<Spinner />
-			) : ProviderIcon ? (
-				<ProviderIcon />
-			) : null}
+  const handleSignIn = () => {
+    if (socialSignInMode === "popup") {
+      signInPopup(
+        {
+          provider: providerId,
+          callbackURL,
+          requestSignUp: view === "signUp"
+        },
+        { onSuccess: () => navigate({ to: redirectTo }) }
+      )
+      return
+    }
 
-			{display === "full"
-				? localization.auth.continueWith.replace(
-						"{{provider}}",
-						getProviderName(provider),
-					)
-				: display === "name"
-					? getProviderName(provider)
-					: null}
+    signInSocial({ provider: providerId, callbackURL, fetchOptions })
+  }
 
-			{display === "icon" && (
-				<span className="sr-only">{getProviderName(provider)}</span>
-			)}
+  return (
+    <Button
+      type="button"
+      variant={variant}
+      disabled={isPending}
+      onClick={handleSignIn}
+      className={cn("relative overflow-visible", className)}
+      {...props}
+    >
+      {signInSocialPending || signInPopupPending ? <Spinner /> : providerIcon}
 
-			{view !== "signUp" && <LastUsedBadge method={provider} floating />}
-		</Button>
-	);
+      {display === "full"
+        ? localization.auth.continueWith.replace(
+            "{{provider}}",
+            getProviderName(provider)
+          )
+        : display === "name"
+          ? getProviderName(provider)
+          : null}
+
+      {display === "icon" && (
+        <span className="sr-only">{getProviderName(provider)}</span>
+      )}
+
+      {view !== "signUp" && <LastUsedBadge method={providerId} floating />}
+    </Button>
+  )
 }

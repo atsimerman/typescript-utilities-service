@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none yet (all features done (feat-001..005))
+**Active Feature:** none (all features done; open the single PR feature/better-auth-upgrade -> main on GitHub; gh CLI is not installed)
 
 ## Status
 
@@ -17,14 +17,21 @@
 - [x] feat-003 Overview totals: `lib/overview.ts` (+tests), `components/overview-stat-card.tsx`, `app/(app)/page.tsx` shows balance, charged/paid this month, paid all time for the first address
 - [x] feat-004 Overview charts: shadcn `chart.tsx` in packages/ui (+recharts 3.8.0 in ui and web), `components/overview-charts.tsx` (stacked charges bar + balance area, 6 months), `chartSeries()` in lib/overview.ts
 - [x] feat-005 replaced the balance chart with Utilities by service (line chart for the 4 most expensive services, rent excluded; `utilitiesSeries()` in lib/overview.ts)
+- [x] feat-006 (done; user verified local sign-in): better-auth family at 1.7.7, UI lib kept at 1.6.43; see feature_list.json evidence
+- [x] feat-007 vendored UI code (packages/ui/src/{components,lib,hooks}) excluded from Biome
+- [x] feat-008 shadcn components synced from the registry (named list, not --all); user verified visually
+- [x] feat-009 @better-auth-ui 1.7.27 + vendored auth components re-synced; user verified
+- [x] feat-010 Settings page: /settings redirect, sidebar Account/Security, breadcrumb, change email enabled without verification (no mail sender)
 
 ### What's Next
 
-1. Add new features to feature_list.json; open PRs in order (overview-totals, then overview-charts)
+1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
+2. After feat-009 is confirmed and merged: feat-010 Settings page (sidebar /settings is a 404 today; decide which settings cards to hide first); then one PR feature/better-auth-upgrade -> main
 
 ## Blockers / Risks
 
 - [ ] Host `node_modules` was a stale devcontainer install; run `./init.sh` inside the devcontainer (`/workspace`), not on the host (host pnpm asks to purge modules).
+- [ ] Change email only works without a mail sender while the user's email is unverified; if it ever gets verified, add emailVerification.sendVerificationEmail + a provider.
 - [ ] Overview charts (incl. utilities-by-service) not yet viewed in a browser (light/dark, tooltips).
 - [ ] chart.tsx is stock shadcn with 3 scoped `biome-ignore` comments and `cn` import pointed at `@repo/ui/lib/utils` (registry used a bogus `cn` package). Re-adding via `shadcn add chart` would prompt to overwrite card.tsx and add that `cn` dep.
 - [ ] Tests cover only apps/web/lib pure helpers; no component/page tests.
@@ -34,6 +41,7 @@
 
 ## Decisions Made
 
+- **Branching for the better-auth upgrade**: one integration branch `feature/better-auth-upgrade` (off main) collects the task branches. Each task gets its own `feature/...` branch off the integration branch and is merged back with `--no-ff`; only the integration branch goes to main as one PR. feat-006 = `feature/better-auth-1-7` (merged), feat-007 and feat-008 next.
 - **Verification mirrors CI**: lint:ci, check-types, build:web. Build only in `--full` to keep the default fast.
 
 ## Files Modified This Session

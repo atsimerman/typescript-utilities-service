@@ -1,30 +1,31 @@
-"use client";
+"use client"
 
 import {
-	type AdditionalFieldValue,
-	parseAdditionalFieldValue,
-} from "@better-auth-ui/core";
+  fieldsWithModelValues,
+  getAdditionalFieldDefaultValues,
+  getAdditionalFieldSubmitValues,
+  validateStringLength
+} from "@better-auth-ui/core"
+import type { UsernameAuthClient } from "@better-auth-ui/core/plugins/username"
+import { useAuth, useSession, useUpdateUser } from "@better-auth-ui/react"
+import { useEffect, useMemo } from "react"
+import { toast } from "sonner"
+
+import { Card, CardContent, CardFooter } from "@repo/ui/components/card"
+import { Field, FieldLabel } from "@repo/ui/components/field"
+import { Input } from "@repo/ui/components/input"
+import { Skeleton } from "@repo/ui/components/skeleton"
+import { cn } from "cn"
 import {
-	type UsernameAuthClient,
-	useAuth,
-	useSession,
-	useUpdateUser,
-} from "@better-auth-ui/react";
-import { Button } from "@repo/ui/components/button";
-import { Card, CardContent, CardFooter } from "@repo/ui/components/card";
-import { Field, FieldError, FieldLabel } from "@repo/ui/components/field";
-import { Input } from "@repo/ui/components/input";
-import { Skeleton } from "@repo/ui/components/skeleton";
-import { Spinner } from "@repo/ui/components/spinner";
-import { cn } from "@repo/ui/lib/utils";
-import { type SyntheticEvent, useState } from "react";
-import { toast } from "sonner";
-import { AdditionalField } from "../../additional-field";
-import { ChangeAvatar } from "./change-avatar";
+  getAuthAdditionalFieldValidators,
+  isAuthFormFieldInvalid,
+  useAuthForm
+} from "../../auth-form"
+import { ChangeAvatar } from "./change-avatar"
 
 export type UserProfileProps = {
-	className?: string;
-};
+  className?: string
+}
 
 /**
  * Render a profile card that lets the authenticated user view and update their display name, username, and avatar.
@@ -33,154 +34,153 @@ export type UserProfileProps = {
  * @returns A JSX element containing the profile card with avatar upload and editable name/username fields
  */
 export function UserProfile({ className }: UserProfileProps) {
-	const { additionalFields, authClient, localization } = useAuth();
-	const { data: session } = useSession(authClient as UsernameAuthClient);
+  const { additionalFields, authClient, avatar, localization, profile } =
+    useAuth<UsernameAuthClient>()
+  const { data: session } = useSession(authClient)
 
-	const { mutate: updateUser, isPending } = useUpdateUser(authClient, {
-		onSuccess: () => toast.success(localization.settings.profileUpdatedSuccess),
-	});
+  const { mutateAsync: updateUser, isPending } = useUpdateUser(authClient, {
+    onSuccess: () => toast.success(localization.settings.profileUpdatedSuccess)
+  })
 
-	const [fieldErrors, setFieldErrors] = useState<{
-		name?: string;
-	}>({});
+  const profileFields = useMemo(
+    () => additionalFields?.filter((field) => field.profile !== false) ?? [],
+    [additionalFields]
+  )
+  const hasProfileFields =
+    profile.name || profileFields.some((field) => field.inputType !== "hidden")
+  const form = useAuthForm({
+    defaultValues: {
+      additionalFields: getAdditionalFieldDefaultValues(profileFields),
+      name: ""
+    },
+    onSubmit: async ({ value }) => {
+      await updateUser({
+        ...(profile.name && { name: value.name }),
+        ...getAdditionalFieldSubmitValues(profileFields, value.additionalFields)
+      })
+    }
+  })
 
-	async function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
-		e.preventDefault();
+  useEffect(() => {
+    if (!session) return
+    form.reset({
+      additionalFields: getAdditionalFieldDefaultValues(
+        fieldsWithModelValues(
+          profileFields,
+          session.user as Record<string, unknown>
+        )
+      ),
+      name: session.user.name
+    })
+  }, [form, profileFields, session])
 
-		const formData = new FormData(e.currentTarget);
-		const name = formData.get("name") as string;
+  if (!avatar.enabled && !hasProfileFields) return null
 
-		const additionalFieldValues: Record<string, unknown> = {};
+  return (
+    <div>
+      <h2 className="text-sm font-semibold mb-3">
+        {localization.settings.userProfile}
+      </h2>
 
-		for (const field of additionalFields ?? []) {
-			if (field.profile === false || field.readOnly) continue;
-			const value = parseAdditionalFieldValue(
-				field,
-				formData.get(field.name) as string | null,
-			);
+      <form.AppForm>
+        <form.AuthFormRoot>
+          <Card className={cn(className)}>
+            <CardContent className="flex flex-col gap-6">
+              <ChangeAvatar />
 
-			if (field.validate) {
-				try {
-					await field.validate(value);
-				} catch (error) {
-					toast.error(error instanceof Error ? error.message : String(error));
-					return;
-				}
-			}
+              {profile.name && (
+                <form.AppField
+                  name="name"
+                  validators={{
+                    onChange: ({ value }) =>
+                      validateStringLength(value, {
+                        requiredMessage: localization.auth.fieldRequired,
+                        trim: true
+                      })
+                  }}
+                >
+                  {(field) => {
+                    const isInvalid = isAuthFormFieldInvalid(field.state.meta)
 
-			// `null` = explicit clear (forward to backend); `undefined` = omitted.
-			if (value !== undefined) {
-				additionalFieldValues[field.name] = value;
-			}
-		}
+                    return (
+                      <Field data-invalid={isInvalid}>
+                        <FieldLabel htmlFor="name">
+                          {localization.auth.name}
+                        </FieldLabel>
 
-		updateUser({
-			name,
-			...additionalFieldValues,
-		});
-	}
+                        {session ? (
+                          <Input
+                            id="name"
+                            name={field.name}
+                            autoComplete="name"
+                            placeholder={localization.auth.name}
+                            disabled={isPending}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(event) =>
+                              field.handleChange(event.target.value)
+                            }
+                            aria-invalid={isInvalid}
+                          />
+                        ) : (
+                          <Skeleton>
+                            <Input className="invisible" />
+                          </Skeleton>
+                        )}
 
-	return (
-		<div>
-			<h2 className="text-sm font-semibold mb-3">
-				{localization.settings.userProfile}
-			</h2>
+                        <field.AuthFormFieldError />
+                      </Field>
+                    )
+                  }}
+                </form.AppField>
+              )}
 
-			<form onSubmit={handleSubmit}>
-				<Card className={cn(className)}>
-					<CardContent className="flex flex-col gap-6">
-						<ChangeAvatar />
+              {profileFields.map((configuredField) => {
+                if (!session) {
+                  if (configuredField.inputType === "hidden") {
+                    return null
+                  }
 
-						<Field data-invalid={!!fieldErrors.name}>
-							<FieldLabel htmlFor="name">{localization.auth.name}</FieldLabel>
+                  return (
+                    <Skeleton key={configuredField.name}>
+                      <Input className="invisible" />
+                    </Skeleton>
+                  )
+                }
 
-							{session ? (
-								<Input
-									key={session?.user.name}
-									id="name"
-									name="name"
-									autoComplete="name"
-									defaultValue={session?.user.name}
-									placeholder={localization.auth.name}
-									disabled={isPending}
-									required
-									onChange={() => {
-										setFieldErrors((prev) => ({
-											...prev,
-											name: undefined,
-										}));
-									}}
-									onInvalid={(e) => {
-										e.preventDefault();
+                return (
+                  <form.AppField
+                    key={configuredField.name}
+                    name={`additionalFields.${configuredField.name}`}
+                    validators={getAuthAdditionalFieldValidators(
+                      configuredField,
+                      localization.auth.fieldRequired
+                    )}
+                  >
+                    {(field) => (
+                      <field.AuthFormAdditionalField
+                        field={configuredField}
+                        isPending={isPending}
+                      />
+                    )}
+                  </form.AppField>
+                )
+              })}
+            </CardContent>
 
-										setFieldErrors((prev) => ({
-											...prev,
-											name: (e.target as HTMLInputElement).validationMessage,
-										}));
-									}}
-									aria-invalid={!!fieldErrors.name}
-								/>
-							) : (
-								<Skeleton>
-									<Input className="invisible" />
-								</Skeleton>
-							)}
-
-							<FieldError>{fieldErrors.name}</FieldError>
-						</Field>
-
-						{additionalFields?.map((field) => {
-							if (field.profile === false) return null;
-
-							if (!session) {
-								if (field.inputType === "hidden") {
-									return null;
-								}
-
-								return (
-									<Skeleton key={field.name}>
-										<Input className="invisible" />
-									</Skeleton>
-								);
-							}
-
-							const value = (session.user as Record<string, unknown>)[
-								field.name
-							];
-
-							// Re-mount when the session value loads so the field's
-							// uncontrolled `defaultValue` reflects the latest data.
-							const key = `${field.name}:${
-								value instanceof Date
-									? value.toISOString()
-									: String(value ?? "")
-							}`;
-
-							return (
-								<AdditionalField
-									key={key}
-									name={field.name}
-									field={{
-										...field,
-										// `defaultValue` is sign-up-only; on the profile we
-										// always seed from the session.
-										defaultValue: value as AdditionalFieldValue | null,
-									}}
-									isPending={isPending}
-								/>
-							);
-						})}
-					</CardContent>
-
-					<CardFooter>
-						<Button type="submit" size="sm" disabled={isPending || !session}>
-							{isPending && <Spinner />}
-
-							{localization.settings.saveChanges}
-						</Button>
-					</CardFooter>
-				</Card>
-			</form>
-		</div>
-	);
+            {hasProfileFields && (
+              <CardFooter>
+                <form.AuthFormSubmitButton
+                  size="sm"
+                  disabled={isPending || !session}
+                >
+                  {localization.settings.saveChanges}
+                </form.AuthFormSubmitButton>
+              </CardFooter>
+            )}
+          </Card>
+        </form.AuthFormRoot>
+      </form.AppForm>
+    </div>
+  )
 }
