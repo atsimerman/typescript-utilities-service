@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    # pnpm workspace: the lockfile is at the root, manifests are in apps/* and packages/*
+    directories:
+      - "/"
+      - "/apps/*"
+      - "/packages/*"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # These must move together (a partial bump left api-key on 1.6 once)
+      better-auth:
+        patterns:
+          - "better-auth"
+          - "@better-auth/*"
+          - "@better-auth-ui/*"
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly

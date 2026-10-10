@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (all features done; open the single PR feature/better-auth-upgrade -> main on GitHub; gh CLI is not installed)
+**Active Feature:** feat-011 done on feature/dependabot (needs merge + enabling Dependabot on GitHub); next feat-012
 
 ## Status
 
@@ -22,9 +22,12 @@
 - [x] feat-008 shadcn components synced from the registry (named list, not --all); user verified visually
 - [x] feat-009 @better-auth-ui 1.7.27 + vendored auth components re-synced; user verified
 - [x] feat-010 Settings page: /settings redirect, sidebar Account/Security, breadcrumb, change email enabled without verification (no mail sender)
+- [x] feat-011 Dependabot config + `pnpm test` step in CI (feature/dependabot)
+- [x] better-auth upgrade PR #13 merged; task branches deleted
 
 ### What's Next
 
+0. feat-012 tenant message in Generate receipt (see feature_list.json)
 1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
 2. After feat-009 is confirmed and merged: feat-010 Settings page (sidebar /settings is a 404 today; decide which settings cards to hide first); then one PR feature/better-auth-upgrade -> main
 

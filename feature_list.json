@@ -89,6 +89,24 @@
 			"dependencies": ["feat-009"],
 			"status": "done",
 			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (33 tests). Decisions (user): only change email is needed; hide/skip the rest. Added app/(app)/settings/page.tsx (redirects /settings to /settings/account); sidebar Settings now has Account and Security; breadcrumb handles /settings/*; proxy.ts comment fixed. Change email: set user.changeEmail {enabled, updateEmailWithoutVerification} in packages/auth (works with no mail sender because users are unverified; the one local user has email_verified=false) and provider localization changeEmailSuccess = 'Email updated' (default text promised a confirmation email). Verified on a throwaway DB (created and dropped) via the real auth handler: unverified user changes email immediately and the session shows it; same email -> 400; another user's email -> 200 with no change. Linked accounts card already hides itself without social providers; forgot/reset password untouched. User checked /settings/account and /settings/security in the browser: works. Caveat: if a user email ever becomes verified, change email needs emailVerification.sendVerificationEmail + a mail provider."
+		},
+		{
+			"id": "feat-011",
+			"name": "Dependabot for dependency updates",
+			"description": "Add .github/dependabot.yml: npm ecosystem (pnpm workspace; root plus apps/* and packages/* via `directories`), github-actions ecosystem, weekly schedule, open-pull-requests-limit 5. Groups: better-auth family (better-auth, @better-auth/*, @better-auth-ui/*) updated together; all other minor+patch updates in one group; majors stay separate PRs. Add `pnpm test` to .github/workflows/ci.yml so Dependabot PRs run the Vitest suite (CI lacks it today). Vendored shadcn / better-auth-ui source files are not npm deps and stay manual. After merge the user enables Dependabot version updates in the GitHub repo settings; check the first run for pnpm workspace problems and tune the config.",
+			"scope": ".github/dependabot.yml, .github/workflows/ci.yml, CLAUDE.md (one line on Dependabot PRs if needed)",
+			"dependencies": ["feat-010"],
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh passed (33 tests). Added .github/dependabot.yml (npm with directories /, /apps/*, /packages/*; github-actions; weekly; limit 5; groups better-auth and minor-and-patch) and a Test step in ci.yml. YAML parses. Not verifiable locally: Dependabot only runs on GitHub; user must enable Dependabot version updates in repo settings, then check the first run for pnpm workspace issues."
+		},
+		{
+			"id": "feat-012",
+			"name": "Tenant message in Generate receipt",
+			"description": "Make the Generate receipt dialog produce the monthly message the user sends to the tenant, in the address locale (uk -> Ukrainian, otherwise English). Format (uk): `платежі за серпень 2026` (month name + year, no 'р.'), blank line, one `<service>: <amount>` line per utility service for that ledger period (rent excluded; services alphabetical), blank line, `В сумі: <sum of the lines>`, then `Переплата за попередні періоди: <amount>` (balance of the whole ledger up to the end of the billing month, i.e. balanceAtEndOf; positive overpayment) or, when the balance is a debt, `Заборгованість за попередні періоди: <amount>`; nothing when settled. Money uses formatMinorAmount (address format). The 'можна скинути' formula is NOT needed. Put the text building in a pure function in apps/web/lib (e.g. lib/tenant-message.ts) with Vitest tests (uk + en, overpayment, debt, settled, no entries); the server action only fetches and calls it. Month needs a period filter; without one keep the existing generic receipt. Update the dialog title/description wording if needed.",
+			"scope": "apps/web/lib/tenant-message.ts (+test), apps/web/app/actions/ledger-receipt.ts, apps/web/components/ledger-receipt-button.tsx",
+			"dependencies": ["feat-011"],
+			"status": "todo",
+			"evidence": ""
 		}
 	]
 }

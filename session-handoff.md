@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- All features done. open the PR feature/better-auth-upgrade -> main on GitHub (no gh CLI here); after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.
+- Merge feature/dependabot, enable Dependabot version updates in GitHub settings and check the first run. Then feat-012 (tenant message) on a new feature/ branch. see feature_list.json for scope.
