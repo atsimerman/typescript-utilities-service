@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-009 done; next: feat-010 Settings page)
+**Active Feature:** none (feat-010 done pending user glance; then the single PR feature/better-auth-upgrade -> main)
 
 ## Status
 
@@ -21,6 +21,7 @@
 - [x] feat-007 vendored UI code (packages/ui/src/{components,lib,hooks}) excluded from Biome
 - [x] feat-008 shadcn components synced from the registry (named list, not --all); user verified visually
 - [x] feat-009 @better-auth-ui 1.7.27 + vendored auth components re-synced; user verified
+- [x] feat-010 Settings page: /settings redirect, sidebar Account/Security, breadcrumb, change email enabled without verification (no mail sender)
 
 ### What's Next
 
@@ -30,6 +31,7 @@
 ## Blockers / Risks
 
 - [ ] Host `node_modules` was a stale devcontainer install; run `./init.sh` inside the devcontainer (`/workspace`), not on the host (host pnpm asks to purge modules).
+- [ ] Change email only works without a mail sender while the user's email is unverified; if it ever gets verified, add emailVerification.sendVerificationEmail + a provider.
 - [ ] Overview charts (incl. utilities-by-service) not yet viewed in a browser (light/dark, tooltips).
 - [ ] chart.tsx is stock shadcn with 3 scoped `biome-ignore` comments and `cn` import pointed at `@repo/ui/lib/utils` (registry used a bogus `cn` package). Re-adding via `shadcn add chart` would prompt to overwrite card.tsx and add that `cn` dep.
 - [ ] Tests cover only apps/web/lib pure helpers; no component/page tests.

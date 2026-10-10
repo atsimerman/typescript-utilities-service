@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Start feat-010 (Settings page) on a branch from feature/better-auth-upgrade; then the single PR to main. see feature_list.json for scope.
+- feat-010 is done pending the user's glance at /settings/account and /settings/security; merge into feature/better-auth-upgrade, then open the single PR to main. see feature_list.json for scope.

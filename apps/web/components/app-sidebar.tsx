@@ -115,12 +115,16 @@ const data = {
 		},
 		{
 			title: "Settings",
-			url: "/settings",
+			url: "/settings/account",
 			icon: <Settings2Icon />,
 			items: [
 				{
-					title: "Profile & account",
-					url: "/settings",
+					title: "Account",
+					url: "/settings/account",
+				},
+				{
+					title: "Security",
+					url: "/settings/security",
 				},
 			],
 		},

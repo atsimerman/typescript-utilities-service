@@ -91,5 +91,15 @@ export default function createAuth(): Auth<BetterAuthOptions> {
 		plugins: [admin()],
 		secret: process.env.BETTER_AUTH_SECRET,
 		trustedOrigins: resolveTrustedOrigins(baseURL),
+		user: {
+			// No email sender is configured, so emails are never verified. For an
+			// unverified user, better-auth then updates the email immediately. If a
+			// user's email ever becomes verified, changing it needs
+			// emailVerification.sendVerificationEmail (and a mail provider).
+			changeEmail: {
+				enabled: true,
+				updateEmailWithoutVerification: true,
+			},
+		},
 	}) as unknown as Auth<BetterAuthOptions>;
 }
