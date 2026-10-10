@@ -125,12 +125,12 @@ describe("utilitiesSeries", () => {
 	];
 
 	it("excludes rent and orders services by total, largest first", () => {
-		const s = utilitiesSeries(entries, "2026-03", 3);
+		const s = utilitiesSeries(entries, "2026-03", 3, 4);
 		expect(s.services.map((x) => x.name)).toEqual(["Water", "Gas"]);
 	});
 
 	it("returns oldest-first points with a value per service per month", () => {
-		const s = utilitiesSeries(entries, "2026-03", 3);
+		const s = utilitiesSeries(entries, "2026-03", 3, 4);
 		const [waterKey, gasKey] = s.services.map((x) => x.key) as [string, string];
 		expect(s.points.map((p) => p.month)).toEqual([
 			"2026-01",
@@ -141,7 +141,16 @@ describe("utilitiesSeries", () => {
 		expect(s.points.map((p) => p[waterKey])).toEqual([0, 500, 700]);
 	});
 
+	it("keeps only the `limit` most expensive services", () => {
+		const s = utilitiesSeries(entries, "2026-03", 3, 1);
+		expect(s.services.map((x) => x.name)).toEqual(["Water"]);
+		expect(Object.keys(s.points[0] ?? {})).toEqual([
+			"month",
+			s.services[0]?.key,
+		]);
+	});
+
 	it("returns no services for an empty ledger", () => {
-		expect(utilitiesSeries([], "2026-03", 3).services).toEqual([]);
+		expect(utilitiesSeries([], "2026-03", 3, 4).services).toEqual([]);
 	});
 });

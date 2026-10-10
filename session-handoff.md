@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
-| Tests | `pnpm test` | 31 passed | apps/web/lib |
+| Tests | `pnpm test` | 32 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks

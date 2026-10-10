@@ -77,11 +77,15 @@ export type UtilitiesSeries = {
 	points: Array<{ month: string } & Record<string, number | string>>;
 };
 
-/** Utilities cost per service for the last `count` billing months. */
+/**
+ * Utilities cost per service for the last `count` billing months, limited to
+ * the `limit` most expensive services over that period.
+ */
 export function utilitiesSeries(
 	entries: OverviewEntry[],
 	month: string,
 	count: number,
+	limit: number,
 ): UtilitiesSeries {
 	const months = monthlyTrend(entries, month, count)
 		.map((r) => r.month)
@@ -101,7 +105,9 @@ export function utilitiesSeries(
 			totals.set(id, cur);
 		}
 	}
-	const ordered = [...totals.entries()].sort((a, b) => b[1].total - a[1].total);
+	const ordered = [...totals.entries()]
+		.sort((a, b) => b[1].total - a[1].total)
+		.slice(0, limit);
 	const keyById = new Map(ordered.map(([id], i) => [id, `service${i}`]));
 
 	return {
