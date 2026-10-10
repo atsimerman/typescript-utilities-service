@@ -51,7 +51,7 @@ export function UserAvatar({
 		return <Skeleton className={cn("size-8 rounded-full", className)} />;
 	}
 
-	const resolvedUser = user ?? session?.user;
+	const resolvedUser: UserAvatarProps["user"] = user ?? session?.user;
 
 	const initials = (
 		resolvedUser?.username ||

@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none yet (all features done (feat-001..005))
+**Active Feature:** feat-006 better-auth 1.7.7 (code done, awaiting manual sign-in check)
 
 ## Status
 
@@ -17,10 +17,12 @@
 - [x] feat-003 Overview totals: `lib/overview.ts` (+tests), `components/overview-stat-card.tsx`, `app/(app)/page.tsx` shows balance, charged/paid this month, paid all time for the first address
 - [x] feat-004 Overview charts: shadcn `chart.tsx` in packages/ui (+recharts 3.8.0 in ui and web), `components/overview-charts.tsx` (stacked charges bar + balance area, 6 months), `chartSeries()` in lib/overview.ts
 - [x] feat-005 replaced the balance chart with Utilities by service (line chart for the 4 most expensive services, rent excluded; `utilitiesSeries()` in lib/overview.ts)
+- [x] feat-006 (code): better-auth family at 1.7.7, UI lib kept at 1.6.43; see feature_list.json evidence
 
 ### What's Next
 
-1. Add new features to feature_list.json; open PRs in order (overview-totals, then overview-charts)
+1. User: sign in locally with the existing user; run on Neon before prod: `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows) and confirm no `issuer` column on accounts
+2. Then feat-007 (@better-auth-ui to 1.7.x, force-update approved)
 
 ## Blockers / Risks
 

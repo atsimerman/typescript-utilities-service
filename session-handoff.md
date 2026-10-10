@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
-| Tests | `pnpm test` | 32 passed | apps/web/lib |
+| Tests | `pnpm test` | 33 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks
@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Choose the next feature with the user; add it to feature_list.json first. see feature_list.json for scope.
+- Finish feat-006 (user sign-in check + Neon duplicate-account query), then start feat-007. see feature_list.json for scope.

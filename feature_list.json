@@ -44,6 +44,24 @@
 			"dependencies": ["feat-004"],
 			"status": "done",
 			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (32 tests incl. 4 for utilitiesSeries; lint:ci, check-types, build:web ok). Not viewed in a browser (no DB in container)."
+		},
+		{
+			"id": "feat-006",
+			"name": "Upgrade better-auth 1.6 -> 1.7.7",
+			"description": "Bump better-auth, @better-auth/passkey and @better-auth/api-key to ^1.7.7 together in packages/auth, packages/ui and apps/web. Keep @better-auth-ui/* at 1.6.x (peer range allows better-auth >=1.6.19). Never target 1.7.0-1.7.2 (account.issuer migration); 1.7.3+ keeps the account schema unchanged. Steps: (1) read-only DB pre-check for duplicate (provider_id, account_id) rows and no issuer column; (2) bump; (3) fix type errors (usePlural now gives singular many-to-one relation keys); (4) regenerate the schema with the new `auth` CLI into a scratch file and diff with packages/database/src/schema/auth.sql.ts, expecting no table change (if a migration is needed, stop and ask); (5) switch auth:generate from the stale @better-auth/cli (1.4.21) to the `auth` package; (6) smoke test that createAuth() builds; (7) manual sign-in check with an existing user against a copy of the DB. No schema migration expected. Rollback is a revert if no schema change.",
+			"scope": "packages/auth, apps/web/package.json, packages/ui/package.json, pnpm-lock.yaml, packages/database/src/schema/auth.sql.ts only if the diff requires it",
+			"dependencies": ["feat-005"],
+			"status": "in-progress",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (33 tests incl. createAuth smoke test). Local DB pre-check ok (no duplicate (provider_id, account_id), no issuer column, only credential accounts). `auth@1.7.7 generate` vs auth.sql.ts: no table/column changes (no DB migration); only relation keys users -> user. Hash check: 1.7 verifies 1.6 scrypt hashes and vice versa. Fixes: linked-account.tsx now passes account.id to accountInfo/unlinkAccount (1.7 identifies accounts by row id), typed resolvedUser in user-avatar/user-view, zod aligned to ^4.5.4 (dedupes zod), @better-auth/api-key and oauth-provider made direct deps at ^1.7.7, auth:generate now uses auth@1.7.7. PENDING before closing: user signs in with the existing user locally in the browser; run the duplicate-account SQL on Neon before production deploy."
+		},
+		{
+			"id": "feat-007",
+			"name": "Upgrade @better-auth-ui to 1.7.x",
+			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. Stop and report if the change turns out to be large.",
+			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
+			"dependencies": ["feat-006"],
+			"status": "not-started",
+			"evidence": ""
 		}
 	]
 }
