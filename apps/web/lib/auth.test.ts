@@ -23,8 +23,16 @@ describe("createAuth", () => {
 			"listUsers", // admin plugin
 			"unlinkAccount",
 			"accountInfo",
+			"changeEmail",
 		]) {
 			expect(auth.api, endpoint).toHaveProperty(endpoint);
 		}
+
+		// The Settings page offers "change email"; with no mail sender it only works
+		// when unverified users may change their email without verification.
+		expect(auth.options.user?.changeEmail).toEqual({
+			enabled: true,
+			updateEmailWithoutVerification: true,
+		});
 	});
 });

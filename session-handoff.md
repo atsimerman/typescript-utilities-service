@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Start feat-010 (Settings page) on a branch from feature/better-auth-upgrade; then the single PR to main. see feature_list.json for scope.
+- All features done. PR feature/better-auth-upgrade -> main is open; after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.

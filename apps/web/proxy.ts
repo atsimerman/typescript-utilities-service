@@ -4,7 +4,7 @@ import { type NextRequest, NextResponse } from "next/server";
  * Layouts can't read the current pathname on the server (Next has no API for
  * it), so we stamp it onto a request header here for `(app)/layout.tsx` to
  * build a `redirectTo` for unauthenticated visitors. Auth itself is enforced
- * in the layout via `ensureSession` — if this proxy's matcher ever drifts out
+ * in the layout via `ensureSessionServer` — if this proxy's matcher ever drifts out
  * of sync with the routes, the worst case is a missing deep-link redirect,
  * not an auth bypass.
  */
