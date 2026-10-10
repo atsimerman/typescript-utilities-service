@@ -4,11 +4,15 @@ import {
 	fetchAddressCurrency,
 	fetchLedgerEntries,
 } from "@/app/actions/ledger-entries";
+import { OverviewCharts } from "@/components/overview-charts";
 import { OverviewStatCard } from "@/components/overview-stat-card";
 import { formatMonth } from "@/lib/format-date";
 import { formatMinorAmount, type MoneyFormat } from "@/lib/format-money";
 import { currentMonth } from "@/lib/monthly-summary";
-import { overviewTotals } from "@/lib/overview";
+import { chartSeries, overviewTotals, utilitiesSeries } from "@/lib/overview";
+
+const CHART_MONTHS = 6;
+const UTILITY_LINES = 4; // most expensive services shown in the utilities chart
 
 const BALANCE_LABEL = {
 	debt: "Debt",
@@ -41,6 +45,13 @@ export default async function Page() {
 	const month = currentMonth();
 	const monthLabel = formatMonth(month, money.locale);
 	const totals = overviewTotals(entries, month);
+	const series = chartSeries(entries, month, CHART_MONTHS);
+	const utilities = utilitiesSeries(
+		entries,
+		month,
+		CHART_MONTHS,
+		UTILITY_LINES,
+	);
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
@@ -84,6 +95,8 @@ export default async function Page() {
 					value={fmt(totals.paidAllTime)}
 				/>
 			</div>
+
+			<OverviewCharts data={series} utilities={utilities} money={money} />
 		</div>
 	);
 }
