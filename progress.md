@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-007 done; next: feat-008)
+**Active Feature:** none (feat-007 done; next: feat-008 shadcn sync, then feat-009)
 
 ## Status
 
@@ -23,7 +23,7 @@
 ### What's Next
 
 1. Optional before prod deploy: on Neon run `select provider_id, account_id, count(*) from accounts group by 1,2 having count(*)>1;` (expect 0 rows; only credential accounts exist)
-2. Then feat-008 (@better-auth-ui to 1.7.x, force-update approved); then one PR feature/better-auth-upgrade -> main
+2. Then feat-008 (sync shadcn components, named list not --all), then feat-009 (@better-auth-ui to 1.7.x, force-update approved); then one PR feature/better-auth-upgrade -> main
 
 ## Blockers / Risks
 

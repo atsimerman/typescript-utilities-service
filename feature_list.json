@@ -65,10 +65,19 @@
 		},
 		{
 			"id": "feat-008",
-			"name": "Upgrade @better-auth-ui to 1.7.x",
-			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. Because feat-007 excludes vendored UI code from Biome, sync files from the registry as they are (no reformatting) so diffs stay minimal. Stop and report if the change turns out to be large.",
-			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
+			"name": "Sync shadcn components from the registry",
+			"description": "Refresh the existing shadcn components in packages/ui so they match the current base-nova registry before the better-auth-ui upgrade. Do NOT run `shadcn add --all`: a dry run showed it creates ~32 new components (drawer, table, toast, questionnaire, ...), adds 10 dependencies and touches use-mobile.ts. Instead run from packages/ui, inside the devcontainer, with the exact list of existing components: `pnpm dlx shadcn@latest add avatar badge breadcrumb button calendar card chart checkbox collapsible combobox dialog dropdown-menu field input-group input item label popover select separator sheet sidebar skeleton slider sonner spinner switch tabs textarea tooltip --overwrite --yes` (dry run: 31 files overwritten, 0 created, 7 dependency entries: cn, sonner, next-themes, react-day-picker@latest, date-fns, recharts@3.8.0, @base-ui/react). Expected effects to review: every component now imports `cn` from the shadcn `cn` package (drop-in for clsx + tailwind-merge) instead of @repo/ui/lib/utils; files come unformatted in registry style (no semicolons), which is fine because Biome ignores them; packages/ui/package.json and the lockfile may change (make sure react-day-picker stays on the ^10 major and the lockfile still installs with the pinned pnpm 10.28.1, check `pnpm install --frozen-lockfile`); globals.css may be touched (review). Note the CLI uses its own pnpm (v12) via dlx: verify the lockfile format is still version 9.0 and revert unrelated changes. Verify: git diff review, `./init.sh --full`, and a visual check of the app (sidebar, dialogs, calendar, charts, dropdown menus). Roll back by reverting the commit; do not touch packages/ui/src/components/auth (that is feat-009).",
+			"scope": "packages/ui (src/components/*.tsx excluding auth/, src/hooks/use-mobile.ts, package.json, possibly src/styles/globals.css), pnpm-lock.yaml",
 			"dependencies": ["feat-007"],
+			"status": "not-started",
+			"evidence": ""
+		},
+		{
+			"id": "feat-009",
+			"name": "Upgrade @better-auth-ui to 1.7.x",
+			"description": "Bump @better-auth-ui/react and @better-auth-ui/core from ^1.6.43 to latest 1.7.x (force-update approved by the user) in packages/ui and apps/web. Fix type errors in the vendored components under packages/ui/src/components/auth and apps/web usages (~50 imports); where the library API changed, compare against the registry versions of the components. feat-007 excludes vendored UI code from Biome and feat-008 refreshes the shadcn components first, so only the better-auth-ui components remain to sync; take registry files as they are (no reformatting). Stop and report if the change turns out to be large.",
+			"scope": "packages/ui (auth components, package.json), apps/web (auth pages, package.json), pnpm-lock.yaml",
+			"dependencies": ["feat-008"],
 			"status": "not-started",
 			"evidence": ""
 		}
