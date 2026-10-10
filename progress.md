@@ -2,8 +2,8 @@
 
 ## Current State
 
-**Last Updated:** 2026-10-08
-**Active Feature:** none yet (feat-002 Vitest done; next: feat-003 Overview totals)
+**Last Updated:** 2026-10-10
+**Active Feature:** none yet (feat-003 done; next: feat-004 Overview charts)
 
 ## Status
 
@@ -14,14 +14,16 @@
 - [x] feat-001 green baseline (cold timings in devcontainer: fast ~10s, full ~30s)
 - [x] `CLAUDE.md` trimmed to a map with repo map and invariants
 - [x] feat-002 Vitest in apps/web: 22 tests (format-money, format-date, monthly-summary); `pnpm test` wired into root, turbo.json and init.sh
+- [x] feat-003 Overview totals: `lib/overview.ts` (+tests), `components/overview-stat-card.tsx`, `app/(app)/page.tsx` shows balance, charged/paid this month, paid all time for the first address
 
 ### What's Next
 
-1. Order: feat-003 Overview totals, feat-004 Overview charts (recharts via shadcn, approved). Commit harness files once the user confirms what to include
+1. feat-004 Overview charts (recharts via shadcn, approved). Commit harness files once the user confirms what to include
 
 ## Blockers / Risks
 
 - [ ] Host `node_modules` was a stale devcontainer install; run `./init.sh` inside the devcontainer (`/workspace`), not on the host (host pnpm asks to purge modules).
+- [ ] Overview page not yet viewed in a browser with real data.
 - [ ] Tests cover only apps/web/lib pure helpers; no component/page tests.
 - [ ] `pnpm approve-builds` warning: esbuild build scripts are ignored (tests still run).
 - [ ] Root `pnpm lint` is `biome check --write` (mutates files); `init.sh` deliberately uses `lint:ci`.

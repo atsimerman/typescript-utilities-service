@@ -24,8 +24,8 @@
 			"description": "Replace the static placeholder cards in apps/web/app/(app)/page.tsx with stat cards for the active address (same address selection as summary/page.tsx): current balance (debt/overpayment/settled), total charged and total paid for the current month, and all-time total paid. Reuse statementTotals, balanceAtEndOf and currentMonth from lib/monthly-summary.ts and formatMinorAmount from lib/format-money.ts; reuse fetch actions, no new DB queries or schema changes. Show an empty state when there is no address. Charts are feat-004. Add unit tests for any new pure helper (Vitest from feat-002). Active address = first of fetchAddresses(), confirmed by user.",
 			"scope": "apps/web/app/(app)/page.tsx, apps/web/components/ (new overview components)",
 			"dependencies": ["feat-002"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (27 tests incl. 5 new for lib/overview.ts; build:web ok). Not verified visually in a browser (no database in the container); check the page with real data."
 		},
 		{
 			"id": "feat-004",
