@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- Finish feat-006 (user sign-in check + Neon duplicate-account query), then start feat-007. see feature_list.json for scope.
+- Start feat-007 (@better-auth-ui to 1.7.x). see feature_list.json for scope.
