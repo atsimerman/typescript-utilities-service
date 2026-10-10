@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none yet (all features done (feat-001..004))
+**Active Feature:** none yet (all features done (feat-001..005))
 
 ## Status
 
@@ -16,6 +16,7 @@
 - [x] feat-002 Vitest in apps/web: 22 tests (format-money, format-date, monthly-summary); `pnpm test` wired into root, turbo.json and init.sh
 - [x] feat-003 Overview totals: `lib/overview.ts` (+tests), `components/overview-stat-card.tsx`, `app/(app)/page.tsx` shows balance, charged/paid this month, paid all time for the first address
 - [x] feat-004 Overview charts: shadcn `chart.tsx` in packages/ui (+recharts 3.8.0 in ui and web), `components/overview-charts.tsx` (stacked charges bar + balance area, 6 months), `chartSeries()` in lib/overview.ts
+- [x] feat-005 replaced the balance chart with Utilities by service (line chart per service, rent excluded; `utilitiesSeries()` in lib/overview.ts)
 
 ### What's Next
 
@@ -24,7 +25,7 @@
 ## Blockers / Risks
 
 - [ ] Host `node_modules` was a stale devcontainer install; run `./init.sh` inside the devcontainer (`/workspace`), not on the host (host pnpm asks to purge modules).
-- [ ] Overview charts not yet viewed in a browser (light/dark, tooltips).
+- [ ] Overview charts (incl. utilities-by-service) not yet viewed in a browser (light/dark, tooltips).
 - [ ] chart.tsx is stock shadcn with 3 scoped `biome-ignore` comments and `cn` import pointed at `@repo/ui/lib/utils` (registry used a bogus `cn` package). Re-adding via `shadcn add chart` would prompt to overwrite card.tsx and add that `cn` dep.
 - [ ] Tests cover only apps/web/lib pure helpers; no component/page tests.
 - [ ] `pnpm approve-builds` warning: esbuild build scripts are ignored (tests still run).

@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { balanceKind, chartSeries, overviewTotals } from "@/lib/overview";
+import {
+	balanceKind,
+	chartSeries,
+	overviewTotals,
+	utilitiesSeries,
+} from "@/lib/overview";
 
 type Entry = Parameters<typeof overviewTotals>[0][number];
 
@@ -83,7 +88,7 @@ describe("overviewTotals", () => {
 });
 
 describe("chartSeries", () => {
-	it("returns the last N months oldest first with category totals and balance", () => {
+	it("returns the last N months oldest first with category totals", () => {
 		const series = chartSeries(
 			[
 				rent("2026-02-01", 100),
@@ -99,6 +104,44 @@ describe("chartSeries", () => {
 			"2026-03",
 		]);
 		expect(series.map((p) => p.rent)).toEqual([0, 100, 100]);
-		expect(series.map((p) => p.closingBalance)).toEqual([0, 100, 150]);
+	});
+});
+
+describe("utilitiesSeries", () => {
+	const gas = (period: string, amount: number): Entry => ({
+		period,
+		entryType: "charge",
+		amount,
+		quantity: 1,
+		serviceId: "s-gas",
+		service: { name: "Gas", slug: "gas" },
+	});
+	// Utilities are billed the month after consumption.
+	const entries = [
+		rent("2026-01-01", 10000),
+		water("2026-01-01", 500), // billed 2026-02
+		gas("2026-01-01", 900), // billed 2026-02
+		water("2026-02-01", 700), // billed 2026-03
+	];
+
+	it("excludes rent and orders services by total, largest first", () => {
+		const s = utilitiesSeries(entries, "2026-03", 3);
+		expect(s.services.map((x) => x.name)).toEqual(["Water", "Gas"]);
+	});
+
+	it("returns oldest-first points with a value per service per month", () => {
+		const s = utilitiesSeries(entries, "2026-03", 3);
+		const [waterKey, gasKey] = s.services.map((x) => x.key) as [string, string];
+		expect(s.points.map((p) => p.month)).toEqual([
+			"2026-01",
+			"2026-02",
+			"2026-03",
+		]);
+		expect(s.points.map((p) => p[gasKey])).toEqual([0, 900, 0]);
+		expect(s.points.map((p) => p[waterKey])).toEqual([0, 500, 700]);
+	});
+
+	it("returns no services for an empty ledger", () => {
+		expect(utilitiesSeries([], "2026-03", 3).services).toEqual([]);
 	});
 });

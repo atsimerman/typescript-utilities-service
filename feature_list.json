@@ -35,6 +35,15 @@
 			"dependencies": ["feat-003"],
 			"status": "done",
 			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (28 tests incl. chartSeries; lint:ci, check-types, build:web ok). Charts not yet viewed in a browser (no DB in container): check light/dark and tooltips on /."
+		},
+		{
+			"id": "feat-005",
+			"name": "Overview: utilities by service chart",
+			"description": "Replace the 'Balance at month end' area chart on the Overview with a line chart of utilities cost per service (water, electricity, gas...) per billing month for the last 6 months, rent excluded, so utility changes are not hidden by the rent amount. Build from serviceBreakdown(entriesBilledIn(...)) per month in a pure tested helper in lib/overview.ts; no new queries. Drop the now unused closingBalance from chartSeries.",
+			"scope": "apps/web/lib/overview.ts (+tests), apps/web/components/overview-charts.tsx, apps/web/app/(app)/page.tsx",
+			"dependencies": ["feat-004"],
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (31 tests incl. 3 for utilitiesSeries; lint:ci, check-types, build:web ok). Not viewed in a browser (no DB in container)."
 		}
 	]
 }

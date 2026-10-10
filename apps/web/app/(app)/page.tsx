@@ -9,7 +9,7 @@ import { OverviewStatCard } from "@/components/overview-stat-card";
 import { formatMonth } from "@/lib/format-date";
 import { formatMinorAmount, type MoneyFormat } from "@/lib/format-money";
 import { currentMonth } from "@/lib/monthly-summary";
-import { chartSeries, overviewTotals } from "@/lib/overview";
+import { chartSeries, overviewTotals, utilitiesSeries } from "@/lib/overview";
 
 const CHART_MONTHS = 6;
 
@@ -45,6 +45,7 @@ export default async function Page() {
 	const monthLabel = formatMonth(month, money.locale);
 	const totals = overviewTotals(entries, month);
 	const series = chartSeries(entries, month, CHART_MONTHS);
+	const utilities = utilitiesSeries(entries, month, CHART_MONTHS);
 
 	return (
 		<div className="flex flex-1 flex-col gap-6 p-4 pt-0">
@@ -89,7 +90,7 @@ export default async function Page() {
 				/>
 			</div>
 
-			<OverviewCharts data={series} money={money} />
+			<OverviewCharts data={series} utilities={utilities} money={money} />
 		</div>
 	);
 }

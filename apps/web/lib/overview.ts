@@ -2,6 +2,7 @@ import {
 	balanceAtEndOf,
 	entriesBilledIn,
 	monthlyTrend,
+	serviceBreakdown,
 	statementTotals,
 } from "@/lib/monthly-summary";
 
@@ -51,7 +52,6 @@ export type ChartPoint = {
 	rent: number;
 	utilities: number;
 	other: number;
-	closingBalance: number;
 };
 
 /** Last `count` billing months ending with `month`, oldest first, for charts. */
@@ -66,7 +66,56 @@ export function chartSeries(
 			rent: r.rent,
 			utilities: r.utilities,
 			other: r.other,
-			closingBalance: r.closingBalance,
 		}))
 		.reverse();
+}
+
+export type UtilitiesSeries = {
+	/** Utility services, largest total first. `key` is safe for CSS variables. */
+	services: Array<{ key: string; name: string }>;
+	/** Oldest first; one numeric field per service key. */
+	points: Array<{ month: string } & Record<string, number | string>>;
+};
+
+/** Utilities cost per service for the last `count` billing months. */
+export function utilitiesSeries(
+	entries: OverviewEntry[],
+	month: string,
+	count: number,
+): UtilitiesSeries {
+	const months = monthlyTrend(entries, month, count)
+		.map((r) => r.month)
+		.reverse();
+	const perMonth = months.map((m) =>
+		serviceBreakdown(entriesBilledIn(entries, m)).filter(
+			(row) => row.category === "utilities",
+		),
+	);
+
+	const totals = new Map<string, { name: string; total: number }>();
+	for (const rows of perMonth) {
+		for (const row of rows) {
+			const id = row.serviceId ?? row.name;
+			const cur = totals.get(id) ?? { name: row.name, total: 0 };
+			cur.total += row.amount;
+			totals.set(id, cur);
+		}
+	}
+	const ordered = [...totals.entries()].sort((a, b) => b[1].total - a[1].total);
+	const keyById = new Map(ordered.map(([id], i) => [id, `service${i}`]));
+
+	return {
+		services: ordered.map(([, v], i) => ({ key: `service${i}`, name: v.name })),
+		points: months.map((m, i) => {
+			const point: { month: string } & Record<string, number | string> = {
+				month: m,
+			};
+			for (const key of keyById.values()) point[key] = 0;
+			for (const row of perMonth[i] ?? []) {
+				const key = keyById.get(row.serviceId ?? row.name);
+				if (key) point[key] = row.amount;
+			}
+			return point;
+		}),
+	};
 }

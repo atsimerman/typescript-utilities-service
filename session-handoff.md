@@ -2,7 +2,7 @@
 
 ## Current Objective
 
-- Goal: harness setup finished; feat-001..004 done; feature list needs new tasks
+- Goal: harness setup finished; feat-001..005 done; feature list needs new tasks
 - Current status: baseline green; branch feature/overview-charts (stacked on feature/overview-totals, not yet merged)
 - Branch / commit: feature/ai-agents-harness, harness files still uncommitted
 
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | Fast | `./init.sh` | pass | ~10s cold, in devcontainer |
 | Full | `./init.sh --full` | pass | ~30s cold |
-| Tests | `pnpm test` | 28 passed | apps/web/lib |
+| Tests | `pnpm test` | 31 passed | apps/web/lib |
 | Audit | `validate-harness.mjs` | 100/100 | static |
 
 ## Blockers / Risks
