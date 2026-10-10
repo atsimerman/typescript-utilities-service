@@ -60,8 +60,8 @@
 			"description": "Stop Biome from linting and formatting vendored shadcn / better-auth-ui code so it can be updated from the registry without reformatting or rule fights. In packages/ui/biome.json exclude src/components, src/lib and src/hooks (today that is effectively all authored-by-others code in packages/ui/src; CSS is already excluded) and remove the five now-pointless per-file rule overrides. Remove the three `biome-ignore` comments added to packages/ui/src/components/chart.tsx. Keep tsc (`check-types`) coverage unchanged. Verify: `pnpm lint:ci` passes; a deliberately badly formatted/violating line in a vendored file (reverted afterwards) does not fail `lint:ci` and is not rewritten by `pnpm --filter @repo/ui lint`; apps/web and packages/auth are still linted (same check there fails). Document in CLAUDE.md invariants that packages/ui vendored code is not linted.",
 			"scope": "packages/ui/biome.json, packages/ui/src/components/chart.tsx (remove biome-ignore comments), CLAUDE.md",
 			"dependencies": ["feat-006"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (33 tests). packages/ui/biome.json now excludes src/components, src/lib, src/hooks and drops the 5 per-file overrides; 3 biome-ignore comments removed from chart.tsx. Checked: a bad line in vendored files neither fails `biome ci .` nor is rewritten by `pnpm --filter @repo/ui lint`; the same line in apps/web and packages/auth still fails ci. Both test edits reverted."
 		},
 		{
 			"id": "feat-008",
