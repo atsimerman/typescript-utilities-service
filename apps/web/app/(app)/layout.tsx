@@ -1,4 +1,4 @@
-import { ensureSession } from "@better-auth-ui/react/server";
+import { ensureSessionServer } from "@better-auth-ui/core/server";
 import { Breadcrumb, BreadcrumbList } from "@repo/ui/components/breadcrumb";
 import { Separator } from "@repo/ui/components/separator";
 import {
@@ -24,7 +24,7 @@ export default async function AppLayout({
 }) {
 	const requestHeaders = await headers();
 	const queryClient = getQueryClient();
-	const session = await ensureSession(queryClient, auth, {
+	const session = await ensureSessionServer(queryClient, auth, {
 		headers: requestHeaders,
 	});
 
