@@ -3,7 +3,7 @@
 ## Current State
 
 **Last Updated:** 2026-10-10
-**Active Feature:** none (feat-010 done pending user glance; then the single PR feature/better-auth-upgrade -> main)
+**Active Feature:** none (all features done; single PR feature/better-auth-upgrade -> main opened)
 
 ## Status
 

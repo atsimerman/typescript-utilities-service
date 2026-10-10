@@ -27,4 +27,4 @@
 
 ## Recommended Next Step
 
-- feat-010 is done pending the user's glance at /settings/account and /settings/security; merge into feature/better-auth-upgrade, then open the single PR to main. see feature_list.json for scope.
+- All features done. PR feature/better-auth-upgrade -> main is open; after it merges, pick the next task and add it to feature_list.json first. see feature_list.json for scope.
