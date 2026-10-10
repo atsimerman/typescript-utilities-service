@@ -24,8 +24,8 @@
 			"description": "Replace the static placeholder cards in apps/web/app/(app)/page.tsx with stat cards for the active address (same address selection as summary/page.tsx): current balance (debt/overpayment/settled), total charged and total paid for the current month, and all-time total paid. Reuse statementTotals, balanceAtEndOf and currentMonth from lib/monthly-summary.ts and formatMinorAmount from lib/format-money.ts; reuse fetch actions, no new DB queries or schema changes. Show an empty state when there is no address. Charts are feat-004. Add unit tests for any new pure helper (Vitest from feat-002). Active address = first of fetchAddresses(), confirmed by user.",
 			"scope": "apps/web/app/(app)/page.tsx, apps/web/components/ (new overview components)",
 			"dependencies": ["feat-002"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (27 tests incl. 5 new for lib/overview.ts; build:web ok). Not verified visually in a browser (no database in the container); check the page with real data."
 		},
 		{
 			"id": "feat-004",
@@ -33,8 +33,17 @@
 			"description": "Add to the Overview: (a) stacked bar chart of rent / utilities / other charges for the last 6 months, built from monthlyTrend(); (b) line or area chart of closingBalance over the same months. User approved recharts via the shadcn chart component (add with the shadcn CLI into packages/ui, following packages/ui/components.json; edits to packages/ui and apps/web package.json plus pnpm-lock.yaml are in scope). Use theme tokens so it works in light and dark. Run ./init.sh --full since dependencies change.",
 			"scope": "packages/ui (chart component, package.json, lockfile), apps/web/components/ (chart components), apps/web/app/(app)/page.tsx",
 			"dependencies": ["feat-003"],
-			"status": "not-started",
-			"evidence": ""
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (28 tests incl. chartSeries; lint:ci, check-types, build:web ok). Charts not yet viewed in a browser (no DB in container): check light/dark and tooltips on /."
+		},
+		{
+			"id": "feat-005",
+			"name": "Overview: utilities by service chart",
+			"description": "Replace the 'Balance at month end' area chart on the Overview with a line chart of utilities cost per service (water, electricity, gas...) per billing month for the last 6 months, rent excluded, limited to the 4 most expensive services, so utility changes are not hidden by the rent amount. Build from serviceBreakdown(entriesBilledIn(...)) per month in a pure tested helper in lib/overview.ts; no new queries. Drop the now unused closingBalance from chartSeries.",
+			"scope": "apps/web/lib/overview.ts (+tests), apps/web/components/overview-charts.tsx, apps/web/app/(app)/page.tsx",
+			"dependencies": ["feat-004"],
+			"status": "done",
+			"evidence": "2026-10-10 devcontainer: ./init.sh --full passed (32 tests incl. 4 for utilitiesSeries; lint:ci, check-types, build:web ok). Not viewed in a browser (no DB in container)."
 		}
 	]
 }
