@@ -46,7 +46,7 @@ export function UserView({
 		{ enabled: !user && !isPending },
 	);
 
-	const resolvedUser = user ?? session?.user;
+	const resolvedUser: UserViewProps["user"] = user ?? session?.user;
 
 	if ((isPending || sessionPending) && !user) {
 		return (
